@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ユーザー情報編集画面{% endblock %}
+
+{% block content %}
+
+
+<body>
+    <!--編集時だけアカウントが切り替わる-->
+    <div class="mt-3">
+        <form method="post" enctype="multipart/form-data" class="updateform">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <!-- アカウントID -->
+            <label for="id_account_id">アカウント名</label>
+            {{ form.account_id }}
+            {{ form.account_id.errors }}
+            <br>
+            
+            <!-- メールアドレス -->
+            <label for="id_email">メールアドレス</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+            <br>
+
+            <!-- 名 -->
+            <label for="id_first_name">名</label>
+            {{ form.first_name }}
+            {{ form.first_name.errors }}
+            <br>
+
+            <!-- 姓 -->
+            <label for="id_last_name">姓</label>
+            {{ form.last_name }}
+            {{ form.last_name.errors }}
+            <br>
+
+            <!-- 生年月日 -->
+            <label for="id_birth_date">生年月日</label>
+            {{ form.birth_date }}
+            {{ form.birth_date.errors }}
+            <br>
+            <button type="submit" class="btn btn-primary">情報を更新する</button>
+        </form>
+    </div>
+</body>
+
+<link rel="stylesheet" href="{% static 'css/member_update.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+
+{% endblock %}

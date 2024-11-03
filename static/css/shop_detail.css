@@ -1,0 +1,83 @@
+p {
+  margin: 0%;
+}
+
+.shousai {
+  background-color: white; /* 白背景 */
+  padding: 20px; /* パディングを追加 */
+  display: flex; /* Flexboxを使用 */
+  max-width: 1400px; /* 最大幅 */
+  margin: 0 auto; /* 中央揃え */
+  flex-direction: column; /* 縦方向に要素を配置 */
+}
+
+.tenmei {
+  text-align: center;
+}
+
+.worktime {
+  text-align: center;
+  font-size: small;
+}
+
+.worktimeLunch, .worktimeDinner, .regularHoliay {
+  margin: 0%;
+  padding: 0%;
+}
+
+.main-content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px;
+  flex: 1;
+}
+
+.main-content2 {
+  order: 2;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.shop-image {  
+  order: 1;
+  margin: 40px;
+  max-height: 500px;
+}
+
+.input-yoyaku {  
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.input-comment {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.input-comment select, .input-comment textarea, .input-comment button {
+  vertical-align: top;  
+}
+
+.okiniiri {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.input-signup a:hover, .input-signup  a:link, .input-signup  a:visited {
+  color: red;
+}
+
+.latest-comment {
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  height: 100px;
+  overflow-y: scroll;
+  border: 1px #999 solid; /* ボーダーを追加 */
+  padding: 10px; /* 内側の余白を追加 */
+  margin-left: 40px;
+}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}予約キャンセル確認画面{% endblock %}
+{% load static %}
+{% block content %}
+<div class="yoyaku-delete">
+    <h3>予約キャンセルを実行</h3>
+    <p>※キャンセルされた予約は復元出来ません。</p> 
+    <form method="post">
+        {% csrf_token %}
+        以下の予約を削除してもよろしいですか？
+        <br>
+        <h4 id="schedule_data">【　{{ object.shop_name }} {{ object.startDate }} {{ object.startHour }}　{{ object.name }}　】</h4>
+        <br>
+        <input type="submit" class="btn btn-danger" value="予約をキャンセル">
+    </form>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/yoyaku_delete.css' %}">
+
+{% endblock %}

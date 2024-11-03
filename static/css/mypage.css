@@ -1,0 +1,58 @@
+.mypage {
+    display: flex; /* Flexboxを使用して子要素を横に並べる */
+    text-align: center;
+    margin-top: 100px;
+}
+
+.left-bar {
+    width: 200px; /* 左側のバーの幅 */
+    padding: 20px; /* 内側の余白 */
+    background-color: #f4f4f4; /* 背景色 */
+    border-right: 1px solid #ccc; /* 右側のボーダー */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#infoUpdate, #schedule-button, #review-button, #favorite-button, #rank-button, #logout-button, #withdrawal-button {
+    margin-top: 10px;
+}
+
+.left-bar a:hover, a:link, a:visited {
+    color: black;
+    text-decoration: underline;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.mContent {
+    flex-grow: 1; /* 残りのスペースを占める */
+    padding: 20px; /* 内側の余白 */
+    background-color: #fff; /* 背景色 */  
+}
+
+.delete-shop {
+    font-size: larger;
+}
+
+table {
+    margin: 20px auto; /* テーブル全体を中央に寄せる */
+    border-collapse: collapse; /* テーブル枠をまとめる */
+    width: 80%; /* 必要に応じて幅を調整 */
+    max-width: 800px; /* 最大幅の設定 */
+  }
+  
+  th, td {
+    padding: 10px; /* セル内の余白 */
+    text-align: center; /* テキストを中央揃え */
+    border: 1px solid #ddd; /* セルのボーダー */
+  }
+  
+  thead {
+    background-color: #f4f4f4; /* ヘッダー行の背景色 */
+    font-weight: bold; /* ヘッダーの文字を太字に */
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* 偶数行の背景色を変更 */
+  }

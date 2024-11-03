@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}店舗詳細画面{% endblock %}
+{% load static %}
+{% block content %}
+<div class="shousai">
+  <h2 class="tenmei">{{ shop_detail.shopName }}</h2>
+  <div class="worktime">
+    <p  id="worktimeLunch"
+      wtl_start = "{{ shop_detail.startHour1 }}"
+      wtl_end = "{{ shop_detail.endHour1 }}"
+      >昼営業時間：{{ shop_detail.startHour1 }}　～　{{ shop_detail.endHour1 }}
+    </p>
+    <p id="worktimeDinner"
+      wtd_start = "{{ shop_detail.startHour2 }}"
+      wtd_end  = "{{ shop_detail.endHour2 }}"
+      >夜営業時間：{{ shop_detail.startHour2 }}　～　{{ shop_detail.endHour2 }}
+    </p>
+    <p id="regularHoliday" rgh="{{ shop_detail.regularHoliday }}">{{ shop_detail.regularHoliday }}</p>
+  </div>
+
+  <div class="main-content">
+    <div class="shop-image">
+      <img src="{{ shop_detail.image.url }}" alt="{{ shop_detail.image.url }}">
+    </div>
+    <div class="main-content2">
+      <div class="input-yoyaku">
+          <!-- 営業開始時間以内で予約開始時間を入力してもらう -->
+
+          <p>予約日と予約開始時間と人数を入力してください。</p>
+          <form action="" method="POST">
+              {% csrf_token %}
+              <select id="yoyaku_form1" name="yoyaku_form1" required></select>
+              <select id="yoyaku_form2" name="yoyaku_form2" required></select>
+              <select id="yoyaku_form3" name="yoyaku_form3" required>
+                <option value="1" selected>1人</option>
+                <option value="2">2人</option>
+                <option value="3">3人</option>
+                <option value="4">4人</option>
+                <option value="5">5人</option>
+                <option value="6">6人</option>
+                <option value="7">7人</option>
+                <option value="8">8人</option>
+                <option value="9">9人</option>
+                <option value="10">10人</option>
+              </select>
+              <input type="text" name="yoyaku_form4" value="{{ user.get_username }}" hidden>
+              <input type="text" name="yoyaku_form5" value="{{ shop_detail.shopName }}" hidden>
+              <button type="submit" name="yoyaku">予約</button>
+          </form>
+      </div>
+
+      {% if user.is_authenticated %} 
+      <div class="input-comment">
+        <p>コメントを入力してからレビュー投稿ボタンを押してください。</p>
+        <form action="" method="POST">
+          {% csrf_token %}
+          <select name="review-star" required>
+            <option value="1">★</option>
+            <option value="2">★★</option>
+            <option value="3" selected>★★★</option>
+            <option value="4">★★★★</option>
+            <option value="5">★★★★★</option>
+          </select>
+          <textarea type="text" rows="3" cols="30" name="review-comment" placeholder="コメントを入力してください。" required></textarea>
+          <input type="text" name="review-user" value="{{ user.get_username }}" hidden>
+          <input type="text" name="review-shop" value="{{ shop_detail.shopName }}" hidden>
+          <button type="submit" name="review-create">レビュー投稿</button>
+        </form>
+      </div>
+
+      <div class="okiniiri">
+        <form action="" method="post">
+          <input type="text" name="favorite_shop_name" value="{{ shop_detail.shopName }}" hidden>
+          <input type="text" name="favorite_shop_user" value="{{ user.get_username }}" hidden>
+          <button type="submit" name="button">このお店をお気に入りに追加</button>
+          {% csrf_token %}
+        </form>
+      </div>
+      {% else %}
+      <div class="input-signup">
+        <a href="{% url 'accounts:signup_and_login' %}" class="btn btn-primary">コメントの投稿やお気に入り登録するには会員登録してください。</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <h5>直近のコメント</h5>
+  <div class="latest-comment">
+  <!-- この店に関する直近コメントの表示 -->
+  
+    <!-- review_listのreviewShopNameは外部キーなので大元のshopNameまで遡らないと一致しない -->
+    <!-- reversedで新しい順に表示 -->
+    <ul>
+        {% for rev in review_list reversed %}
+        {% if shop_detail.shopName == rev.reviewShopName.shopName %}
+        <li>
+          {{ rev.reviewUserName }}
+          {% if rev.reviewStar == "1" %}
+            ★
+          {% elif rev.reviewStar == "2" %}
+            ★★
+          {% elif rev.reviewStar == "3" %}
+            ★★★
+          {% elif rev.reviewStar == "4" %}
+            ★★★★
+          {% elif rev.reviewStar == "5" %}
+            ★★★★★
+          {% endif %}
+          {{ rev.reviewComment }} {{ rev.reviewUpdated }}
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+  </div>
+
+  
+</div>
+
+<script src="{% static 'js/shop_detail.js' %}{% if style_js_date %}?={{ style_js_date }}{% endif %}"></script>
+<link rel="stylesheet" href="{% static 'css/shop_detail.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}管理者用レビュー削除画面{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<body>
+    <div class="review-display">
+        <h3>{{ user.account_id }}さんのレビュー削除画面</h3>
+        {% if reviews %}
+        <form action="" method="POST">
+        {% csrf_token %}
+        <p>削除するコメントを選択して削除実行ボタンを押して下さい</p> 
+        <table>
+            <thead>
+                <tr>
+                    <th>選択</th>
+                    <th>店名</th>
+                    <th>評価</th>
+                    <th>レビュー</th>
+                    <th>投稿日</th>
+                </tr>
+            </thead>
+            <tbody>  
+        {% for i in reviews %}
+                <tr>
+                    <td><input type="radio" name="commentDelete" value="{{ i.pk }}"></td>
+                    <td>{{ i.reviewShopName }}</td>
+                    <td>{{ i.get_reviewStar_display }}</td>
+                    <td>{{ i.reviewComment }}</td>
+                    <td>{{ i.reviewUpdated }}</td>
+                </tr>
+        {% endfor %}
+            </tbody>
+        <input type="submit" value="削除実行">
+        </form>
+        {% else %}
+        <h3>{{ user.account_id }}　さんはコメントを投稿していません</h3>
+        {% endif %}
+    </div>
+</body>
+<link rel="stylesheet" href="{% static 'css/review_display.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+{% endblock %}

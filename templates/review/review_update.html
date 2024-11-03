@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}レビュー編集画面{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+
+    <h2>{{ user.get_username }}　さんが投稿するコメント</h2>
+
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        {{ field.label }}
+        {{ field }}
+        {{ field.errors }}
+        <br>
+        {% endfor %}
+        <input type="submit" value="送信">
+</form>
+
+{% endblock %}

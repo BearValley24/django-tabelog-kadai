@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}規約画面{% endblock %}
+
+{% block content %}
+
+
+<body>
+    <div id="kiyaku">
+        <!-- 一般ユーザー閲覧領域 -->
+        <h3>{{ original_kiyaku.kiyakuName }}</h3>
+        
+        <div class="kiyaku-content">
+            {{ original_kiyaku.kiyakuContent | linebreaksbr }}
+        </div>
+    
+        <p class="update-info">
+            最終更新日：{{ original_kiyaku.updated_at }} 最終更新者：{{ original_kiyaku.lastUpdater }}
+        </p>  
+    </div>
+    
+    {% if user.get_username == 'nagoya_rai' %}
+    <div class="admin-form-wrapper">
+        <label for="btn">規約を編集するにはここをクリックしてください。</label>
+        <input type="checkbox" id="btn">
+        <div class="kiyaku-edit">
+            <!--管理者用テキスト編集フォーム-->
+            <form action="" method="POST">
+                {% csrf_token %}
+                <textarea type="text" rows="10" cols="50" name="inputKiyaku">{{ original_kiyaku.kiyakuContent }}</textarea>
+                <p class="notice-message">編集内容を確認してから編集完了ボタンを押してください。</p>
+                <input type="text" name="updater" value="{{ user.get_username }}" hidden>
+                <button type="submit">編集完了</button>
+                </form>
+            {{ msg }}
+        </div>
+    </div>
+    {% endif %}
+</body>
+
+<link rel="stylesheet" href="{% static 'css/kiyaku2.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+<script src="{% static 'js/kiyaku.js' %}"></script>
+{% endblock %}

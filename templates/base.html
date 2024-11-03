@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    
+    <nav>
+        <!--タイトルと規約と会員登録を上部に表示-->
+        <div class="left-nav">
+            <a id="title" href="{% url 'accounts:index' %}">NAGOYAMESHI</a>
+            <a id="kiyakux" href="{% url 'accounts:kiyaku' %}">規約</a>
+            {% if user.is_superuser %}
+            <a href="{% url 'accounts:kanrisha' %}">管理者用ページ</a>
+            {% endif %}   
+        </div>
+        <div class="right-nav">
+            {% if user.is_authenticated %}
+            <a id="logout" href="{% url 'accounts:logout' %}">ログアウト</a>
+            <a id="signup" href="{% url 'accounts:mypage' %}">マイページ</a>
+            {% else %}
+            <a id="signup" href="{% url 'accounts:signup_and_login' %}">会員登録/ログイン</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="background">
+        <div class="slide slide1"></div>
+        <div class="slide slide2"></div>
+        <div class="slide slide3"></div>
+    </div>
+    <!-- メインコンテンツ -->
+    <div class="container mx-auto text-center">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+    <link rel="stylesheet" href="{% static 'css/base2.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+</html>

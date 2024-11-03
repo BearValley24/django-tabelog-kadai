@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}管理者画面{% endblock %}
+{% load static %}
+{% block content %}
+<!-- 成功画面を表示する -->
+<div class="success">
+    <P>{{ suc }}</P>
+    <p>処理に成功しました！</p>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/success.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}店舗編集画面{% endblock %}
+{% load static %}
+{% block content %}
+    <!-- 管理者だけがログイン出来るようにする -->
+    <div class="shop-update">
+        <div class="mt-3">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                
+                <div class="form-group">
+                <label for="id_shopTag">店舗カテゴリ</label>
+                {{ form.ShopTag }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_shopName">店舗名</label>
+                {{ form.shopName }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_phoneNumber">電話番号</label>
+                {{ form.phoneNumber }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_address">住所</label>
+                {{ form.address }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_addressLat">住所緯度</label>
+                {{ form.addressLat }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_addressLng">住所経度</label>
+                {{ form.addressLng }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_startHour1">昼営業開始時間</label>
+                {{ form.startHour1 }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_endHour1">昼営業終了時間</label>
+                {{ form.endHour1 }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_startHour2">夜営業開始時間</label>
+                {{ form.startHour2 }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_endHour2">夜営業終了時間</label>
+                {{ form.endHour2 }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_regularHoliday">定休日</label>
+                {{ form.regularHoliday }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_image">店舗外観画像</label>
+                {{ form.image }}
+                </div>
+
+                <div class="form-group">
+                <label for="id_introduction">店舗紹介文</label>
+                {{ form.introduction }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">店舗情報更新</button>
+            </form>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{% static 'css/shop_update.css' %}">
+
+{% endblock %}

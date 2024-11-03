@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+<!-- superuserをログアウトしないとログイン画面は表示されない -->
+
+{% block title %}TOP画面{% endblock %}
+{% if user.is_authenticated %}
+<div class="h1">MyPage</div>
+{% else %}
+<div class="h1">Main</div>
+{% endif %}
+
+
+{% block content %}
+<!-- Google Mapの表示 -->
+<!-- 検索ワードにヒットする店舗のLatLngだけを渡す -->
+<!-- 検索ワードが何も入力されていない場合は全てのLatLngを渡す -->
+<fieldset>
+    <div id="ShopSearch"><!-- 店舗検索 -->
+        <form action="" method="get">
+            <select name='selectTag' id="select">
+                <option value="0" disabled selected>店舗種別検索</option>
+                <option value="all">全て</option>
+                {% for i in shoptag_list %}
+                <option value="{{ i.pk }}">{{ i.tag }}</option>
+                {% endfor %}
+            </select>
+            <input name="query" value="{{ request.GET.query }}" size="25" type="text" placeholder="店舗名を入力（一部でも可）">
+            <button type="submit">search</button>
+        </form>
+        <!-- script文でQuerySetを読み込んでFor文で表示 --> 
+    </div>
+</fieldset>
+
+
+{% if not shop_list == None %}
+<div id="map" >
+    <script type="text/javascript">
+    const APIKEY='{{ views_APIkey }}'; // APIキーを変数に設定
+        
+        (g => {
+        var h, a, k, p = "The Google Maps JavaScript API",
+            c = "google",
+            l = "importLibrary",
+            q = "__ib__",
+            m = document,
+            b = window;
+            mapStyle = "/staticmap?center=35.16968760064512,-223.1205074003527&zoom=17&format=png&maptype=roadmap&style=element:geometry%7Ccolor:0x1d2c4d&style=element:labels.text.fill%7Ccolor:0x8ec3b9&style=element:labels.text.stroke%7Ccolor:0x1a3646&style=feature:administrative.country%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:administrative.land_parcel%7Celement:labels%7Cvisibility:off&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0x64779e&style=feature:administrative.province%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:landscape.man_made%7Celement:geometry.stroke%7Ccolor:0x334e87&style=feature:landscape.man_made%7Celement:labels.text%7Cvisibility:off&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x023e58&style=feature:poi%7Celement:geometry%7Ccolor:0x283d6a&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x6f9ba5&style=feature:poi%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:poi.business%7Cvisibility:off&style=feature:poi.park%7Celement:geometry.fill%7Ccolor:0x023e58&style=feature:poi.park%7Celement:labels.text%7Cvisibility:off&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x3C7680&style=feature:road%7Celement:geometry%7Ccolor:0x304a7d&style=feature:road%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:road%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:road.arterial%7Celement:labels%7Cvisibility:off&style=feature:road.highway%7Celement:geometry%7Ccolor:0x2c6675&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x255763&style=feature:road.highway%7Celement:labels%7Cvisibility:off&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0xb0d5ce&style=feature:road.highway%7Celement:labels.text.stroke%7Ccolor:0x023e58&style=feature:road.local%7Cvisibility:off&style=feature:road.local%7Celement:labels%7Cvisibility:off&style=feature:transit%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:transit%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:transit.line%7Celement:geometry.fill%7Ccolor:0x283d6a&style=feature:transit.line%7Celement:labels.text%7Cvisibility:off&style=feature:transit.station%7Celement:geometry%7Ccolor:0x3a4762&style=feature:water%7Celement:geometry%7Ccolor:0x0e1626&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x4e6d70&size=480x360"
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}),
+            r = new Set,
+            e = new URLSearchParams,
+            u = () => h || (h = new Promise(async(f, n) => {
+            await (a = m.createElement("script"));
+            e.set("libraries", [...r] + "");
+            for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+            e.set("callback", c + ".maps." + q);
+            a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+            d[q] = f;
+            m.head.append(a)
+            }));
+            
+        d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n))
+        })({
+        key:APIKEY,
+        v:'beta'
+        
+        });
+        
+        let map;
+        async function initMap() {           
+            const position = { lat: 35.17070, lng: 136.88196 }; // 地図の中心位置
+            const { Map } = await google.maps.importLibrary("maps");
+            const { AdvancedMarkerView } = await google.maps.importLibrary("marker");
+            map = new Map(document.getElementById("map"), {
+                zoom: 15,
+                center: position,
+                mapId: "4b24989d467ba607",    
+            });
+
+            // マーカーの情報を設定
+            const marker_info = [
+            {% for j in shop_list %}
+                {
+                    position: { lat: {{ j.addressLat}}, lng: {{ j.addressLng }} },
+                    title:  "{{ j.shopName }}",
+                    content: "{{ j.introduction }}",
+                    description: "{{ j.introduction }} <br> <a href={% url 'shops:shop_detail' j.pk %}>予約と詳細確認はこちら</a>", // 説明文
+                },
+            {% endfor %}  
+            ];
+
+            // マーカー表示
+            const infoWindow = new google.maps.InfoWindow();
+            
+            marker_info.forEach(({ position, title, description }, i) => {
+                const pinView = new google.maps.marker.PinView({
+                    glyph: `${i + 1}`,
+                });
+                const marker = new google.maps.marker.AdvancedMarkerView({
+                    position,
+                    map,
+                    title: `${i + 1}. ${title}`,
+                    content: pinView.element,
+                });
+                
+                // マーカーの説明文を別のオブジェクトで保持
+                marker.description = description;
+
+                // クリックイベント
+                marker.addListener('gmp-click', ({ domEvent, latLng }) => {
+                    console.log("click!")
+                    infoWindow.close();
+                    infoWindow.setContent(`<div><h3>${marker.title}</h3><p>${marker.description}</p></div>`);
+                    infoWindow.open(marker.map, marker);
+                });
+            });
+
+            // 円描写 800m
+            //new google.maps.Circle({
+            //    strokeColor: "#FF0000",
+            //    strokeOpacity: 0.8,
+            //    strokeWeight: 2,
+            //    fillColor: "#FF0000",
+            //    fillOpacity: 0.35,
+            //    map,
+            //    center: position,
+            //    radius: 800,
+            //});
+        }
+        initMap();  
+    </script>
+</div>
+{% endif %}
+
+
+<div>
+    <script src="{% static 'js/map.js' %}{% if style_js_date %}?={{ style_js_date }}{% endif %}"></script> 
+    <link rel="stylesheet" href="{% static 'css/top2.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+</div>
+
+{% endblock %}
+
+

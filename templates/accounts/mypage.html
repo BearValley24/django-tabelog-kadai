@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}マイページ画面{% endblock %}
+
+{% block content %}
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+
+<script src="{% static 'js/mypage.js' %}{% if style_js_date %}?={{ style_js_date }}{% endif %}"></script> 
+
+<body>
+    <div class="mypage">
+        <div class="left-bar">
+            <!--会員情報変更、予約履歴、レビュー履歴、ログアウト、退会のリンク-->
+            <a id="infoUpdate" href="#">会員情報確認</a>
+            <a id="schedule-button" href="#">予約履歴</a>
+            <a id="review-button" href="#">レビュー履歴</a>
+            <a id="favorite-button" href="#">お気に入り店舗</a>
+            <a id="rank-button" href="#">有料会員登録</a>
+            <a id="logout-button" href="#">ログアウト</a>
+            <a id="withdrawal-button" href="#">退会</a>
+        </div>
+        <div class="mContent" id="contentArea">
+            <!--left-barの選択結果を表示-->
+            <p>左のサイドバーから表示したいメニューを選択してください。</p>
+                        
+        </div>
+        <!--ランク変更とパスワード変更を追加する-->
+        <div id="user-info"
+            data-first-name="{{ user.first_name }}"
+            data-last-name="{{ user.last_name }}"
+            data-email="{{ user.email }}"
+            data-account-id="{{ user.account_id }}"
+            data-rank="{% if user.rank_is_free %}無料会員{% else %}有料会員{% endif %}"
+            data-url1="{% url 'accounts:MemberUpdate' pk=user.pk %}"
+            data-url2="{% url 'accounts:password_change' %}">
+        </div>
+
+        <div id="logout-info"
+            data-yes="{% url 'accounts:logout' %}"
+        ></div>
+
+        <div id="schedule-info"
+            data-schedule='{{ schedule_list_json|safe }}'
+        ></div>
+
+        <div id="review-info"
+            data-review='{{ review_list_json|safe }}'
+        ></div>
+
+        <div id="favorite-info"
+            data-favorite='{{ favorite_shop_json|safe }}'
+        ></div>
+
+        <div id="withdrawal-info"
+            data-withdrawal="{{ user.get_username }}"
+        ></div>
+
+        <div id="rank-info"
+            data-rank="{% url 'credit:product_top_page' %}"
+        ></div>
+    </div>
+</body>
+<link rel="stylesheet" href="{% static 'css/mypage.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+{% endblock %}

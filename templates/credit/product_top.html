@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}サブスクリプション画面{% endblock %}
+{% load static %}
+{% block content %}
+<script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<body>
+    <section>
+      <h1>サブスクリプション</h1>
+      <hr />
+        <div class="product">
+            <div class="description">
+                <!-- 商品一覧をループで表示 -->
+                {% for product in product_list %}
+                  <h2>{{ product.name }}</h2>
+                  
+                  <div>{{ product.description }}</div>
+
+                <!-- 商品に紐づく価格情報を表示 -->
+                {% for price_data in product.Prices.all %}
+                  <h4>価格：¥{{ price_data.get_display_price }}</h4>
+                  <form action="{% url 'credit:create-checkout-session' product.id  %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit">購入画面に進む</button>
+                  </form>
+                  <p>※ボタンを押してから決済ページが表示されるまで時間が掛かります。しばらくお待ちください。※</p>
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <link rel="stylesheet" href="{% static 'css/product_top.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+</body>
+{% endblock %}

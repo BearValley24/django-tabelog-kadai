@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}管理用画面{% endblock %}
+
+{% block content %}
+
+
+<body>
+    <div class="kanrisha">
+        <!--会員数検索-->
+        <div class="memSearch">
+            <h3>会員検索</h3>
+            <p>入力された値の期間内で会員数を検索します。（年だけの入力の場合は1年間の検索結果を表示）</p>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="memberSearchTable">
+                <span id="inputYear"></span>
+                <span>年</span>
+                <select size="1" name="inputMonth" id="inputMonth"></select>
+                <span>月</span>
+                <select size="1" name="inputDate" id="inputDate"></select>
+                <span>日</span>
+                <input type="radio" name="subscription" value="all" checked>全ての会員
+                <input type="radio" name="subscription" value="True">無料会員のみ
+                <input type="radio" name="subscription" value="False">有料会員のみ
+                <input type="submit" name="numberSearch" value="検索">
+            </form>
+            <p>{{ errMsg }}：結果は{{ dateUser }}件です。</p>
+
+            <!--会員検索-->
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="text" name="memberSearchContext" size="40" placeholder="会員の名前かメールアドレスを入力（一部OK）">
+                <input type="submit" name="memberSearch" value="検索">
+            </form>
+
+            {% if errMsg1 %}
+                <p>{{ errMsg1 }}</p>
+            {% endif %}
+
+            <p>会員のレビューの閲覧編集</p>
+            {% if searchResult %}
+                <ul>
+                    {% for user in searchResult %}
+                        <li>
+                            <p>ID: {{ user.account_id }}</p>
+                            <p>メールアドレス: {{ user.email }}</p>
+                            <p>氏名: {{ user.first_name }} {{ user.last_name }}</p>
+                            <a href="{% url 'review:DisplayReview' pk=user.pk %}" >{{ user.account_id }}のレビューの確認と削除</a> 
+                            <a href="{% url 'accounts:MemberDelete' pk=user.pk %}">{{ user.account_id }}の削除</a>
+                            <a href="{% url 'accounts:MemberUpdate' pk=user.pk %}">{{ user.account_id }}の編集</a>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>該当するユーザーが見つかりませんでした。</p>
+            {% endif %}
+        </div>
+        </div>
+
+        <div class="shSearch">
+            <h3>店舗情報の編集と追加</h3>
+            <a class="addShop" href="{% url 'shops:shop_create' %}">新規店舗登録</a>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <select id="shopSelect">
+                    {% for i in Shops %}
+                    <option value="{{ i.pk }}">{{ i.shopName }}</option>
+                    {% endfor %}
+                </select>
+                <input type="button" value="店舗情報の編集" onClick="editShop()">
+            </form>
+
+            <p>店舗数集計：{{ allShop }}</p>
+        </div>
+        <div class="tag-Edit">
+            <h3>店舗カテゴリの検索/追加/編集/削除</h3>
+            <div class="tagCount">
+                <p>現在の登録カテゴリ数：{{ countTag }}</p>
+                <form action="" method="POST">
+                {% csrf_token %}
+                    <input type="text" name="addTagContext" placeholder="新しいカテゴリを追加" size="20" required>
+                    <button type="submit" name="tagAdd">カテゴリ追加</button>
+                </form>
+            </div>
+            <div class="all-category">
+                <p>現在の登録カテゴリ一覧</p>
+                <form action="" method="POST">
+                {% csrf_token %}
+                {% for i in allTag %}
+                <li>
+                    {{ i.tag }}
+                    <input type="text" name="targetTagPK" value="{{ i.pk }}" hidden>
+                    <input type="text" name="targetTagContext" placeholder="新しいカテゴリ名を入力" size="20">
+                    <button type="submit" name="tagEdit">カテゴリ編集</button>
+                    <button type="submit" name="tagDelete">カテゴリ削除</button>
+                </li>
+                {% endfor %}
+                </form>
+                {% if sucMsg %}
+                <p class="success-message">{{ sucMsg }}</p>
+                {% endif %}
+            </div>
+            <br>
+            <div class="tag-search-result">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="tagSearchContext" size="25" placeholder="カテゴリ名を入力（一部OK）" required>
+                    <button type="submit" name="tagSearch">カテゴリ検索</button>
+                </form>
+            
+                <p>{{ errMsg2 }}</p>
+                {% if resultTag %}
+                    {% for i in resultTag %}
+                    <li>{{ i.tag }}</li>
+                    {% endfor %}
+                {% else %}
+                <p>検索語句に一致するカテゴリは見つかりませんでした。</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+<!--店舗情報編集用-->
+<script>
+    function editShop() {
+        var selectedShop = document.getElementById('shopSelect').value;  // 選択されたshopのpkを取得
+        var url = "{% url 'shops:shop_update' pk=0 %}".replace("0", selectedShop);  // pk=0を選択された値に置き換える
+        location.href = url;  // リダイレクト
+    }
+</script>
+
+</body>
+<script src="{% static 'js/kanrisha.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/kanrisha.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+{% endblock %}

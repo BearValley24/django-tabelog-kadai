@@ -1,0 +1,67 @@
+
+#map {
+    padding-top: 120px;
+    height: 500px;
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+/* 検索ボックス全体のスタイル */
+#ShopSearch {
+    background-color: transparent;
+    padding: 20px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* 横並びのためのflexboxレイアウト */
+#ShopSearch form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 各入力フィールドとボタンのスタイル */
+#ShopSearch input[type="text"], #ShopSearch select, #ShopSearch button {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* 検索ボックスの幅を調整 */
+#ShopSearch input[type="text"] {
+    flex-grow: 2; /* フォーム全体の幅に応じて柔軟に広がる */
+    min-width: 200px;
+}
+
+/* ドロップダウンの幅を調整 */
+#ShopSearch select {
+    width: 20%;
+
+    min-width: 60px;
+}
+
+/* ボタンの幅を固定 */
+#ShopSearch button {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* ボタンホバー時の効果 */
+#ShopSearch button:hover {
+    background-color: #ff4500;
+}
+
+#ShopSearch select  {
+    color: #ccc;
+}
+#ShopSearch select  option[value="0"]{
+    display: none;
+}

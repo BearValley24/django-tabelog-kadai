@@ -1,0 +1,20 @@
+/*中央配置*/
+.success {
+    position: absolute;
+    background-color: white;
+    display: flex;
+    padding: 20px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 10%;
+    width: 40%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: green;
+    font-weight: bold;
+    font-size: large;    
+}

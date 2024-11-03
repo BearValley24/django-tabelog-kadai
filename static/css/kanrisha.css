@@ -1,0 +1,33 @@
+.kanrisha{
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 80%;
+    height: auto;
+    margin: 20px auto;
+    text-align: center;
+}
+.memSearch {
+    border: solid 3px;
+    margin: 20px auto;
+}
+.memSearch li {
+    background-color: rgb(199, 242, 243);
+}
+.shSearch {
+    border: solid 3px;
+    margin: 20px auto;
+}
+.addShop:hover, .addShop:link, .addShop:visited {
+    color: red;
+    font-weight: bold;
+}
+.tag-Edit {
+    border: solid 3px;
+    margin: 20px auto;
+}
+.success-message {
+    color: red;
+    font-weight: bold;
+}

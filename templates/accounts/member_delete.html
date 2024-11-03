@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}会員削除画面{% endblock %}
+{% load static %}
+{% block content %}
+<div class="member-delete">
+    <h3>{{ targetUser.account_id }}　さんの削除画面</h3>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="submit" name="memberDelete" value="削除する">
+    </form>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/member_delete.css' %}">
+{% endblock %}

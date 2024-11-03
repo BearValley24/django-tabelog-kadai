@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}管理者画面{% endblock %}
+{% load static %}
+{% block content %}
+<!-- 失敗画面を表示する -->
+<div class="failure">
+    <p>{{ err }}</p>
+    <p>処理に失敗しました。直前の処理をやり直してください。</p>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/failure.css' %}">
+
+{% endblock %}

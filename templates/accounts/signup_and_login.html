@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}ログイン画面{% endblock %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="signup-form">
+        <h2>新規会員登録の方はこちらから登録</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ signup_form.as_p }}
+            <button type="submit" name="signup">サインアップ</button>
+        </form>
+    </div>
+
+    <div class="login-form">
+        <h2>既に会員の方はこちらからログイン</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ login_form.as_p }}
+            <button type="submit" name="login">ログイン</button>
+        </form>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/signup_and_login.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+{% endblock %}
