@@ -1,0 +1,15 @@
+/*中央配置*/
+.member-delete {
+    position: absolute;
+    background-color: white;
+    padding: 20px;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 10%;
+    width: 40%;
+    text-align: center;
+    color: black;  
+}

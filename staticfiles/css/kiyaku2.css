@@ -1,0 +1,66 @@
+#kiyaku {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 80%;
+    height: 400px;
+    margin: 20px auto;
+}
+
+#kiyaku h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.kiyaku-content {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.update-info {
+    font-size: 14px;
+    color: #888;
+    margin-top: 10px;
+}
+#kiyaku .kiyaku-content {
+    max-height: 280px; /* スクロールバーが表示される最大高さ */
+    overflow-y: auto;  /* 縦方向にスクロールバーを表示 */
+    padding: 10px;     /* 内容の余白 */
+    border: 1px solid #ccc; /* 枠線の追加（任意） */
+    background-color: #f9f9f9; /* 背景色（任意） */
+}
+
+
+
+.kiyaku-edit {
+    display: none;
+}
+
+.admin-form-wrapper input[type='checkbox'] {
+    display: none;
+}
+
+.admin-form-wrapper label {
+    background-color: orange; /* 背景色（任意） */
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+}
+
+#btn:checked + .kiyaku-edit {
+    display: block;
+    position: fixed;
+    bottom: 20px;       /* 画面下からの距離を指定 */
+    left: 50%;          /* 水平方向の中央 */
+    transform: translateX(-50%);  /* 水平方向の中央に調整 */
+    background-color: #f9f9f9; /* 背景色（任意） */
+    padding: 20px;      /* 余白 */
+    border: 1px solid #ccc; /* 枠線 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 影を追加して見やすく */
+    width: 80%;         /* フォームの幅を調整 */
+    max-width: 600px;    /* 最大幅を設定 */
+    z-index: 1000;      /* 他の要素より前に表示 */
+}

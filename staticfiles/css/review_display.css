@@ -1,0 +1,42 @@
+.review-display {
+  position: absolute;
+  background-color: white;
+  padding: 20px;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60%;
+  width: 70%;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  color: black;   
+}
+
+table {
+  margin: 20px auto; /* テーブル全体を中央に寄せる */
+  border-collapse: collapse; /* テーブル枠をまとめる */
+  width: 80%; /* 必要に応じて幅を調整 */
+  max-width: 800px; /* 最大幅の設定 */
+}
+
+th, td {
+  padding: 10px; /* セル内の余白 */
+  text-align: center; /* テキストを中央揃え */
+  border: 1px solid #ddd; /* セルのボーダー */
+}
+
+thead {
+  background-color: #f4f4f4; /* ヘッダー行の背景色 */
+  font-weight: bold; /* ヘッダーの文字を太字に */
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* 偶数行の背景色を変更 */
+}
+
+tbody tr:hover {
+  background-color: #eaeaea; /* ホバー時の背景色 */
+}
