@@ -10,15 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-#本番と開発環境の切り替え
-try:
-    from .settings_local import *
-    print('development')
-except ImportError:
-    pass
-
-print('production')
-
 from pathlib import Path
 from dotenv import load_dotenv
 
