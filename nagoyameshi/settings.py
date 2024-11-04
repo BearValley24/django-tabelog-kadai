@@ -10,15 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-#本番と開発環境の切り替え
-try:
-    from .settings_local import *
-    print('development')
-except ImportError:
-    print('product')
-    pass
-
-
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -36,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eq90=zxw_%e75*3iohfdv9i82j@hdqyd))udls!-f+*_vs7%yo'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/']
+ALLOWED_HOSTS = ['*.herokuapp.com', 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/']
 
 
 # Application definition
@@ -173,3 +164,12 @@ STRIPE_WEBHOOK_SECRET = os.getenv('stripe_WEBkey')
 # メディアファイルのURLと保存先ディレクトリを設定
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+#本番と開発環境の切り替え
+try:
+    print('development')
+    from .settings_local import *
+
+except ImportError:
+    pass
