@@ -15,9 +15,10 @@ try:
     from .settings_local import *
     print('development')
 except ImportError:
+    print('product')
     pass
 
-print('production')
+
 
 from pathlib import Path
 from dotenv import load_dotenv
