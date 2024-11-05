@@ -10,7 +10,6 @@ from django.views import View
 from .models import Subscription, SubscriptionPrice
 from .models import Transaction 
 
-
 import datetime 
 import json
 import stripe
@@ -44,17 +43,17 @@ endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
 # 決済成功画面
 class SuccessPageView(TemplateView):
-    template_name = 'credit/success.html'
+    template_name = '/credit/success/'
 
 # 決済キャンセル画面
 class CancelPageView(TemplateView):
-    template_name = 'accounts/mypage.html'
+    template_name = '/accounts/mypage/'
 
 class ProductTopPageView(ListView):
     # 商品マスタ
     model = Subscription
     # ページリンク
-    template_name = "credit/product_top.html"
+    template_name = 'credit/product_top.html'
     #レコード情報をテンプレートに渡すオブジェクト
     context_object_name = "product_list"
     def get_context_data(self, **kwargs):
@@ -71,8 +70,13 @@ class CreateCheckoutSessionView(View):
         product = Subscription.objects.get(id=self.kwargs["pk"])
         price   = SubscriptionPrice.objects.get(product=product)
 
-        # ドメイン
-        YOUR_DOMAIN = "http://127.0.0.1:8000"
+        # ドメイン 検証と本番を分ける
+        try:
+            from nagoyameshi.settings_local import l
+            YOUR_DOMAIN = "http://127.0.0.1:8000" 
+        except:
+            YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/'
+
         # 決済用セッション
         checkout_session = stripe.checkout.Session.create(
             # 決済方法

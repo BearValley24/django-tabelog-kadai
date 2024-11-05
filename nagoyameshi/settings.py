@@ -81,7 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'nagoyameshi.wsgi.application'
-
+print(TEMPLATES)
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
