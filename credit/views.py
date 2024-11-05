@@ -41,13 +41,6 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 # WEBHOOKのシークレットキー
 endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
-# 決済成功画面
-class SuccessPageView(TemplateView):
-    template_name = '/credit/success/'
-
-# 決済キャンセル画面
-class CancelPageView(TemplateView):
-    template_name = '/accounts/mypage/'
 
 class ProductTopPageView(ListView):
     # 商品マスタ
@@ -93,8 +86,8 @@ class CreateCheckoutSessionView(View):
                         "product_id":product.id,
                        },
             mode='subscription',                               # 決済手段（一括）
-            success_url=YOUR_DOMAIN + '/shops/result_success/',        # 決済成功時のリダイレクト先
-            cancel_url=YOUR_DOMAIN + '/shops/result_failure/',          # 決済キャンセル時のリダイレクト先
+            success_url=YOUR_DOMAIN + 'shops/result_success.html',        # 決済成功時のリダイレクト先
+            cancel_url=YOUR_DOMAIN + 'shops/result_failure.html',          # 決済キャンセル時のリダイレクト先
         )
         return redirect(checkout_session.url)
     
