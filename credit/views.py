@@ -64,10 +64,10 @@ class CreateCheckoutSessionView(View):
         price   = SubscriptionPrice.objects.get(product=product)
 
         # ドメイン 検証と本番を分ける
-        try:
-            from nagoyameshi.settings_local import l
+        file_path = './nagoyameshi/settings_local.py'
+        if os.path.isfile(file_path):
             YOUR_DOMAIN = "http://127.0.0.1:8000" 
-        except:
+        else:
             YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/'
 
         # 決済用セッション
@@ -86,8 +86,8 @@ class CreateCheckoutSessionView(View):
                         "product_id":product.id,
                        },
             mode='subscription',                               # 決済手段（一括）
-            success_url=YOUR_DOMAIN + 'shops/result_success.html',        # 決済成功時のリダイレクト先
-            cancel_url=YOUR_DOMAIN + 'shops/result_failure.html',          # 決済キャンセル時のリダイレクト先
+            success_url=YOUR_DOMAIN + '/shops/result_success/',        # 決済成功時のリダイレクト先
+            cancel_url=YOUR_DOMAIN + '/shops/result_failure/',          # 決済キャンセル時のリダイレクト先
         )
         return redirect(checkout_session.url)
     
