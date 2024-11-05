@@ -151,31 +151,6 @@ class LogoutView(BaseLogoutView):
     # ログアウトビュー
     success_url_= reverse_lazy('index') 
 
-#def mypagefunc(request):
-#    if request.method == 'GET':
-#        object_list = User.objects.all()
-#        schedule_list = Schedule.objects.all()
-#        shop_list = Shop.objects.all()
-#        return render(request, 'accounts/mypage.html', {
-#            'object_list':object_list,
-#            'schedule_list':schedule_list,
-#            'shop_list':shop_list,
-#        })
-#    elif request.method == 'POST':
-#        user = User.objects.get(account_id = request.user)
-#        if request.POST.get('account_Id') is None:
-#            if request.POST.get('password') is not None:
-#                user.set_password(request.POST.get('password'))
-#            elif request.POST.get('rank') == 'a':
-#                user.rank_is_free = False
-#            elif request.POST.get('rank') == 'b':
-#                user.rank_is_free = True
-#        else:
-#            user.account_id = request.POST.get('account_Id')
-#        user.save()
-#        return redirect('/mypage/')
-
-# postメソッドの場合の処理を記載しIDを変更する
 
 class Mypage(TemplateView):
     model = User

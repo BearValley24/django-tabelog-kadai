@@ -9,7 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from .models import Subscription, SubscriptionPrice
 from .models import Transaction 
-
+from accounts.models import User
+from django.shortcuts import render, get_object_or_404
 
 import json
 import stripe
@@ -58,8 +59,15 @@ class ProductTopPageView(ListView):
 
 # 決済画面
 class CreateCheckoutSessionView(View):
-
+    
     def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # 二重でサブスクリプションに契約することを防止
+        if Transaction.objects.filter(user_connection=self.request.user):
+            context['err'] = 'あなたは既にサブスクリプションを契約しています。'
+            print(context)
+            return render(request, 'shops/result_failure.html', context)
+
         # 商品マスタ呼出
         product = Subscription.objects.get(id=self.kwargs["pk"])
         price   = SubscriptionPrice.objects.get(product=product)
@@ -86,6 +94,7 @@ class CreateCheckoutSessionView(View):
                         "product_id":product.id,
                        },
             mode='subscription',                               # 決済手段（一括）
+            customer_email = request.user.email,               # メールアドレスはログインしたユーザーのを固定
             success_url=YOUR_DOMAIN + '/shops/result_success/',        # 決済成功時のリダイレクト先
             cancel_url=YOUR_DOMAIN + '/shops/result_failure/',          # 決済キャンセル時のリダイレクト先
         )
@@ -128,37 +137,142 @@ def stripe_webhook(request):
         product        = Subscription.objects.get(id=product_id)      # 購入商品情報
         product_name   = product.name                            # 購入した商品名
         amount         = session["amount_total"]                 # 購入金額（手数料抜き）
-
+        customer_id    = session["customer"]                     # customer_id
         # DBに結果を保存 
         print('SaveTransactionStart')
-        SaveTransaction(product_name, customer_name, customer_email, amount)
+        transaction, created = SaveTransaction(product_name, customer_name, customer_email, amount, customer_id)
         print('SaveTransactionComplete')
 
-        # 決済完了後メール送信（Djangoのメール機能利用）
-        print('SendEmailStart')
-        send_mail(
-            subject = '商品購入完了！',                                                                                     # 件名
-            message = '{}様\n商品購入ありがとうございます。購入された商品URLはこちら{}'.format(customer_name,product.url),  # メール本文
-            recipient_list = [customer_email],                                                                              # TO
-            from_email = 'test@test.com'                                                                                    # FROM
-        )
-        print('SendEmailComplete')
         # 結果確認
         print(session)
+
+        # Userの情報を更新
+        user = User.objects.filter(email=customer_email).update(rank_is_free=False)
+        user.save()
+        print('rank変更完了')
+
+        # user_connection情報を更新
+        user_instance = User.objects.filter(email=customer_email).first()
+        transaction.user_connection = user_instance
+        transaction.save()
+        print('紐づけ完了')
 
     return HttpResponse(status=200)
 
 
 # 顧客の商品購入履歴を保存
-def SaveTransaction(product_name, customer_name, customer_email, amount):
+def SaveTransaction(product_name, customer_name, customer_email, amount, customer_id):
     # DB保存
     saveData = Transaction.objects.get_or_create(
                         product_name   =  product_name,
                         date           = datetime.datetime.now(),
                         customer_name  = customer_name,
                         email          = customer_email,
-                        product_amount = amount
+                        product_amount = amount,
+                        customer_id = customer_id
                         )
     return saveData
 
+# 新規追加
+class SubscriptionCancel(View):
+    # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
+    def post(self, request, *args, **kwargs):
+        kokyaku = request.POST.get('kokyaku_pk').first() # リクエストしてきたユーザーのPKを取得
+        transactions = Transaction.objects.filter(user_connection=kokyaku)
 
+        if transactions.exists(): 
+            targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
+            kokyaku.rank_is_free = True # 会員ランクを変更
+            kokyaku.save()
+            # Stripeの処理（例: Stripe APIを使ったキャンセル処理）
+            for transaction in transactions:
+                 stripe.Subscription.delete(transaction.customer_id)
+
+            # トランザクションを削除
+            transactions.delete()
+            # modelから削除
+            targetTransaction.delete() 
+
+            context = {'suc': 'サブスクリプションを解約しました。'}
+            return render(request, 'shops/result_success.html', context)
+        else:
+            kokyaku.rank_is_free = True # 会員ランクを変更
+            kokyaku.save()  
+            context = {'err': 'あなたに紐づくサブスクリプションはありませんでした。'}          
+            return render(request, 'shops/result_failure.html', context)
+
+class CardinfoUpdate(View):
+    # 新しいクレジットカード情報をデフォルト設定で追加する（古いクレジットカード情報は残る）
+    def post(self, request, *args, **kwargs):
+        kokyaku_pk = request.POST.get('kokyaku_pk')
+        kokyaku = get_object_or_404(User, pk=kokyaku_pk)
+        transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+
+        if not transaction:
+            context = {'err': '顧客情報が見つかりませんでした。'}
+            return render(request, 'shops/result_failure.html', context)
+
+        update_customer_id = transaction.customer_id
+        
+        # 新しいカード情報を受け取る
+        number = request.POST.get('card_number')   # 16桁のカード番号
+        exp_month = request.POST.get('exp_month')  # 1-12の数値
+        exp_year = request.POST.get('exp_year')    # 4桁の年数
+        cvc = request.POST.get('cvc')              # 3桁のCVC
+
+        try:
+            # 新しいカード情報を作成
+            new_payment_method = stripe.PaymentMethod.create(
+                type="card",
+                card={
+                    "number": number,
+                    "exp_month": exp_month,
+                    "exp_year": exp_year,
+                    "cvc": cvc,
+                },
+            )
+
+            # 新しいカード情報を顧客に紐づける
+            stripe.PaymentMethod.attach(
+                new_payment_method.id,
+                customer=update_customer_id,
+            )
+
+            # 新しいカード情報をデフォルトに設定する
+            stripe.Customer.modify(
+                update_customer_id,
+                invoice_settings={
+                    'default_payment_method': new_payment_method.id,
+                }
+            )
+
+            context = {'suc': 'クレジットカード情報を更新しました。'}
+            return render(request, 'shops/result_success.html', context)
+
+        except stripe.error.StripeError as e:
+            context = {'err': f'エラーが発生しました。: {e.user_message}'}
+            return render(request, 'shops/result_failure.html', context)
+
+
+class CardinfoDelete(View):
+    # stripeからリクエストしてきた顧客情報をクレジットカード情報ごと削除する
+    def post(self, request, *args, **kwargs):
+        kokyaku_pk = request.POST.get('kokyaku_pk')
+        kokyaku = get_object_or_404(User, pk=kokyaku_pk)
+        transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+
+        if not transaction:
+            context = {'err': '顧客情報が見つかりませんでした。'}
+            return render(request, 'shops/result_failure.html', context)
+
+        delete_customer_id = transaction.customer_id
+
+        try:
+            # Stripe上の顧客情報を削除
+            stripe.Customer.delete(delete_customer_id)
+            context = {'suc': 'クレジットカード情報を削除しました。'}
+            return render(request, 'shops/result_success.html', context)
+
+        except stripe.error.StripeError as e:
+            context = {'err': f'エラーが発生しました。: {e.user_message}'}
+            return render(request, 'shops/result_failure.html', context)

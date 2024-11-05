@@ -39,17 +39,17 @@ class Transaction(models.Model):
     customer_name = models.CharField(max_length=100)
     # 購入者のメールアドレス 購入者名はクレジットカードの名義なのでUserとは一致しない可能性あり
     email  = models.CharField(max_length=255)
-    #email = models.ForeignKey(
-    #    User,
-    #    to_field = 'email',
-    #    verbose_name = 'accounts_email',
-    #    on_delete=models.CASCADE,
-    #    related_name='related_accounts_email',
-    #    )
-    # 購入商品名
     product_name = models.CharField(max_length=100)
     # 支払い金額
     product_amount = models.IntegerField()
+    user_connection = models.OneToOneField(
+        User,
+        verbose_name='Userオブジェクトとの紐づき用',
+        on_delete=models.PROTECT, # Userが解約しないで退会するのを防止する
+        blank=True,
+        null=True,
+    )
+    customer_id = models.CharField(max_length=255, verbose_name='customer_id', blank=True, null=True)
 
     # admin画面で商品名表示
     def __str__(self):
