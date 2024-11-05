@@ -64,8 +64,6 @@ class CreateCheckoutSessionView(View):
         price   = SubscriptionPrice.objects.get(product=product)
 
         # ドメイン 検証と本番を分ける
-        file_path = './nagoyameshi/settings_local.py'
-        #if os.path.isfile(file_path):
         if os.getenv('DJANGO_ENV') == 'development':
             YOUR_DOMAIN = 'http://127.0.0.1:8000'
         else:
@@ -96,6 +94,7 @@ class CreateCheckoutSessionView(View):
 @csrf_exempt
 def stripe_webhook(request):
     print('phase1')
+    print(request.headers)
     # サーバーのイベントログからの出力ステートメント
     #payload = request.body
     payload = request.body.decode('utf-8')
@@ -129,17 +128,20 @@ def stripe_webhook(request):
         product_name   = product.name                            # 購入した商品名
         amount         = session["amount_total"]                 # 購入金額（手数料抜き）
 
-        # DBに結果を保存
+        # DBに結果を保存 
+        print('SaveTransactionStart')
         SaveTransaction(product_name, customer_name, customer_email, amount)
-
+        print('SaveTransactionComplete')
 
         # 決済完了後メール送信（Djangoのメール機能利用）
+        print('SendEmailStart')
         send_mail(
             subject = '商品購入完了！',                                                                                     # 件名
             message = '{}様\n商品購入ありがとうございます。購入された商品URLはこちら{}'.format(customer_name,product.url),  # メール本文
             recipient_list = [customer_email],                                                                              # TO
             from_email = 'test@test.com'                                                                                    # FROM
         )
+        print('SendEmailComplete')
         # 結果確認
         print(session)
 

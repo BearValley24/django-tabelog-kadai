@@ -164,6 +164,10 @@ STRIPE_WEBHOOK_SECRET = os.getenv('stripe_WEBkey')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Stripeのリクエスト受付用
+CSRF_TRUSTED_ORIGINS = [
+    'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/shops/result_success/',     # 本番用のURL
+]
 
 #本番と開発環境の切り替え
 DJANGO_ENV = 'production'
