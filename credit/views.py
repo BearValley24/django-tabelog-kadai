@@ -10,7 +10,7 @@ from django.views import View
 from .models import Subscription, SubscriptionPrice
 from .models import Transaction 
 
-import datetime 
+
 import json
 import stripe
 import os
@@ -34,6 +34,7 @@ def get_modified_date(filepath):
     except:
         return ''
 
+import datetime 
 
 # STRIPEのシークレットキー
 stripe.api_key = settings.STRIPE_SECRET_KEY
