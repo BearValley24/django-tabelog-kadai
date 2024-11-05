@@ -38,14 +38,14 @@ class Transaction(models.Model):
     # 購入者
     customer_name = models.CharField(max_length=100)
     # 購入者のメールアドレス 購入者名はクレジットカードの名義なのでUserとは一致しない可能性あり
-    #email  = models.EmailField(max_length=100)
-    email = models.ForeignKey(
-        User,
-        to_field = 'email',
-        verbose_name = 'accounts_email',
-        on_delete=models.CASCADE,
-        related_name='related_accounts_email',
-        )
+    email  = models.CharField(max_length=255)
+    #email = models.ForeignKey(
+    #    User,
+    #    to_field = 'email',
+    #    verbose_name = 'accounts_email',
+    #    on_delete=models.CASCADE,
+    #    related_name='related_accounts_email',
+    #    )
     # 購入商品名
     product_name = models.CharField(max_length=100)
     # 支払い金額
