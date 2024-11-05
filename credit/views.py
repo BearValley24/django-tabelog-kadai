@@ -65,8 +65,9 @@ class CreateCheckoutSessionView(View):
 
         # ドメイン 検証と本番を分ける
         file_path = './nagoyameshi/settings_local.py'
-        if os.path.isfile(file_path):
-            YOUR_DOMAIN = "http://127.0.0.1:8000" 
+        #if os.path.isfile(file_path):
+        if os.getenv('DJANGO_ENV') == 'development':
+            YOUR_DOMAIN = 'http://127.0.0.1:8000'
         else:
             YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com'
 

@@ -166,7 +166,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 #本番と開発環境の切り替え
+DJANGO_ENV = 'production'
 try:
+    DJANGO_ENV = 'development'
     print('development')
     from .settings_local import *
 
