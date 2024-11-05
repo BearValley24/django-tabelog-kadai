@@ -68,7 +68,7 @@ class CreateCheckoutSessionView(View):
         if os.path.isfile(file_path):
             YOUR_DOMAIN = "http://127.0.0.1:8000" 
         else:
-            YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com/'
+            YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com'
 
         # 決済用セッション
         checkout_session = stripe.checkout.Session.create(
