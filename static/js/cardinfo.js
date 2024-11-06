@@ -4,6 +4,8 @@ var elements = stripe.elements();
 var card = elements.create('card');
 card.mount('#card-element');
 
+console.log(stripe_APIkey)
+console.log(stripe)
 
 // フォームの送信時にトークン化
 var form = document.getElementById('payment-form');
