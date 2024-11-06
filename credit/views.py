@@ -345,8 +345,10 @@ def update_card(request):
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
         except stripe.error.StripeError as e:
+            print(e)
             return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)
         except Exception as e:
+            print(e)
             return JsonResponse({'success': False, 'message': f'予期しないエラーが発生しました: {str(e)}'}, status=500)
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)
