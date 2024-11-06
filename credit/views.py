@@ -311,8 +311,8 @@ def update_card(request):
             # JSONデータの取得
             data = json.loads(request.body)
             token = data.get('token')
-            kokyaku_pk = data.get('kokyaku_pk')  # JSONからkokyaku-pkを取得
-
+            #kokyaku_pk = data.get('kokyaku_pk')  # JSONからkokyaku-pkを取得
+            kokyaku_pk = '1'
             if not token or not kokyaku_pk:
                 return JsonResponse({'success': False, 'message': 'トークンまたは顧客IDが提供されていません。'}, status=400)
 
@@ -333,15 +333,15 @@ def update_card(request):
             )
 
             # 顧客のデフォルト支払い方法を新しいカードに変更
+            customer = stripe.Customer.modify(
+                customer_id,
+                source = token 
+            )
             #customer = stripe.Customer.modify(
             #    customer_id,
             #    default_source=payment_method.id, 
+            #    name = 'New Name'
             #)
-            customer = stripe.Customer.modify(
-                customer_id,
-                default_source=payment_method.id, 
-                name = 'New Name'
-            )
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
