@@ -48,17 +48,10 @@ class TopView(TemplateView):
         load_dotenv()
         context = super().get_context_data(**kwargs)
         context['style_css_date'] = get_modified_date('css/base2.css')
-        #context['shop_list'] = Shop.objects.all()
         context['shop1'] = Shop.objects.get(pk=1)
         return context
         # template_name変数で表示したいHTMLを名称指定する
 
-
-class ShopListView(ListView):
-    model = Shop
-    template_name = "list.html"
-    #context_object_name = 'shops_list'
-    #paginate_by = 3
 
 class ShopCreateView(CreateView):
     model = Shop

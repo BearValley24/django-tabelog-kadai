@@ -37,6 +37,9 @@ def get_modified_date(filepath):
 
 import datetime 
 
+# stripeのAPIキーを渡す
+stripe_APIKey = settings.STRIPE_PUBLIC_KEY
+
 # STRIPEのシークレットキー
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -176,7 +179,6 @@ class SubscriptionCancel(View):
         return render(request, 'credit/subscription.html', context)
     # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
     def post(self, request, *args, **kwargs):
-        context = {'style_css_date': get_modified_date('css/subscription.css')}
         kokyaku_pk = request.POST.get('kokyaku-pk') # リクエストしてきたユーザーのPKを取得
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transactions = Transaction.objects.filter(user_connection=kokyaku)
@@ -193,18 +195,24 @@ class SubscriptionCancel(View):
             # modelから削除
             targetTransaction.delete() 
 
-            context = {'suc': 'サブスクリプションを解約しました。'}
+            context = {
+                'suc': 'サブスクリプションを解約しました。',
+                'style_css_date': get_modified_date('css/subscription.css')
+            }
             return render(request, 'credit/subscription.html', context)
         else:
             kokyaku.rank_is_free = True # 会員ランクを変更
             kokyaku.save()  
-            context = {'err': 'あなたに紐づくサブスクリプションはありませんでした。'}          
+            context = {
+                'err': 'あなたに紐づくサブスクリプションはありませんでした。',
+                'style_css_date': get_modified_date('css/subscription.css')
+            }          
             return render(request, 'credit/subscription.html', context)
 
 class CardinfoUpdateAndDelete(View):
     # 現在のカード情報を取得
-    def get(self, request, *args, **kwargs):
-        context = {'style_css_date': get_modified_date('css/cardinfo.css')}
+    def get(self, request, *args, **kwargs):    
+        
         # 顧客の PK を取得し、データベースから顧客を特定
         kokyaku_pk = kwargs.get('kokyaku_pk')
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
@@ -244,8 +252,12 @@ class CardinfoUpdateAndDelete(View):
                     'last4': default_payment_method.card.last4,  # カード番号の下4桁
                     'exp_month': default_payment_method.card.exp_month,  # 有効期限の月
                     'exp_year': default_payment_method.card.exp_year,    # 有効期限の年
-                }
+                },
+                'style_css_date': get_modified_date('css/cardinfo.css'),
+                'style_js_date': get_modified_date('css/cardinfo.js'),
+                'stripe_APIKey': stripe_APIKey
             }
+
             return render(request, 'credit/cardinfo.html', context)
 
         except stripe.error.StripeError as e:
@@ -254,7 +266,6 @@ class CardinfoUpdateAndDelete(View):
     
     # 新しいクレジットカード情報をデフォルト設定で追加する（古いクレジットカード情報は残る）
     def post(self, request, *args, **kwargs):
-        context = {'style_css_date': get_modified_date('css/cardinfo.css')}
         kokyaku_pk = request.POST.get('kokyaku-pk')
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transaction = Transaction.objects.filter(user_connection=kokyaku).first()
@@ -271,6 +282,7 @@ class CardinfoUpdateAndDelete(View):
             exp_month = request.POST.get('exp-month')  # 1-12の数値
             exp_year = request.POST.get('exp-year')    # 2桁の年数(下2桁)
             cvc = request.POST.get('cvc')              # 3桁のCVC
+            name = request.POST.get('name')            # カード名義
 
             try:
                 # 新しいカード情報を作成
@@ -282,6 +294,9 @@ class CardinfoUpdateAndDelete(View):
                         "exp_year": exp_year,
                         "cvc": cvc,
                     },
+                    billing_details={
+                        "name":name,
+                    }
                 )
 
                 # 新しいカード情報を顧客に紐づける
@@ -297,8 +312,12 @@ class CardinfoUpdateAndDelete(View):
                         'default_payment_method': new_payment_method.id,
                     }
                 )
-
-                context = {'suc': 'クレジットカード情報を更新しました。'}
+                
+                context = {
+                    'suc': 'クレジットカード情報を更新しました。',
+                    'style_css_date': get_modified_date('css/cardinfo.css'),
+                    'style_js_date': get_modified_date('css/cardinfo.js')
+                }
                 return render(request, 'credit/cardinfo.html', context)
 
             except stripe.error.StripeError as e:
