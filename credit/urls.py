@@ -11,7 +11,7 @@ urlpatterns = [
     path("webhook/", views.stripe_webhook, name="webhook"),  
     path('subscription/', views.SubscriptionCancel.as_view(), name='subscription_cancel'),
     path('cardinfo/<int:kokyaku_pk>/', views.CardinfoUpdateAndDelete.as_view(), name='cardinfo_update_delete'),
-    path('update-card/', views.update_card, name='update_card'),
+    path('update-card/', views.update_card, name='update_card'), # endpoint用
 ]
 
 # メディア表示

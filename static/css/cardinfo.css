@@ -39,7 +39,11 @@ hr {
 }
 
 #card-element button {
-    margin-left: 100px;
+    margin-left: 150px;
+}
+
+.cardinfo-delete button {
+    margin-right: 280px;
 }
 
 .fatal {
