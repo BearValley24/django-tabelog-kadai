@@ -43,8 +43,8 @@
                 <option value="9">9人</option>
                 <option value="10">10人</option>
               </select>
-              <input type="text" name="yoyaku_form4" value="{{ user.get_username }}" hidden>
-              <input type="text" name="yoyaku_form5" value="{{ shop_detail.shopName }}" hidden>
+              <input type="hidden" name="yoyaku_form4" value="{{ user.get_username }}">
+              <input type="hidden" name="yoyaku_form5" value="{{ shop_detail.shopName }}">
               <button type="submit" name="yoyaku">予約</button>
           </form>
       </div>
@@ -62,16 +62,16 @@
             <option value="5">★★★★★</option>
           </select>
           <textarea type="text" rows="3" cols="30" name="review-comment" placeholder="コメントを入力してください。" required></textarea>
-          <input type="text" name="review-user" value="{{ user.get_username }}" hidden>
-          <input type="text" name="review-shop" value="{{ shop_detail.shopName }}" hidden>
+          <input type="hidden" name="review-user" value="{{ user.get_username }}">
+          <input type="hidden" name="review-shop" value="{{ shop_detail.shopName }}">
           <button type="submit" name="review-create">レビュー投稿</button>
         </form>
       </div>
 
       <div class="okiniiri">
         <form action="" method="post">
-          <input type="text" name="favorite_shop_name" value="{{ shop_detail.shopName }}" hidden>
-          <input type="text" name="favorite_shop_user" value="{{ user.get_username }}" hidden>
+          <input type="hidden" name="favorite_shop_name" value="{{ shop_detail.shopName }}">
+          <input type="hidden" name="favorite_shop_user" value="{{ user.get_username }}">
           <button type="submit" name="button">このお店をお気に入りに追加</button>
           {% csrf_token %}
         </form>

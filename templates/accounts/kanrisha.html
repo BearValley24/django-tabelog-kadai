@@ -92,7 +92,7 @@
                 {% for i in allTag %}
                 <li>
                     {{ i.tag }}
-                    <input type="text" name="targetTagPK" value="{{ i.pk }}" hidden>
+                    <input type="hidden" name="targetTagPK" value="{{ i.pk }}">
                     <input type="text" name="targetTagContext" placeholder="新しいカテゴリ名を入力" size="20">
                     <button type="submit" name="tagEdit">カテゴリ編集</button>
                     <button type="submit" name="tagDelete">カテゴリ削除</button>

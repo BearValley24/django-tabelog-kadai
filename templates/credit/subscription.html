@@ -12,7 +12,7 @@
         <div class="subscription">
           <form action="" method="POST">
             {% csrf_token %}
-            <input type="text" name="kokyaku-pk" value="{{ user.pk }}" hidden>
+            <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
             <button type="submit">サブスクリプションを解約する</button>
           </form>
         </div>

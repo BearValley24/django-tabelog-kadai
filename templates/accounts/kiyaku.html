@@ -29,7 +29,7 @@
                 {% csrf_token %}
                 <textarea type="text" rows="10" cols="50" name="inputKiyaku">{{ original_kiyaku.kiyakuContent }}</textarea>
                 <p class="notice-message">編集内容を確認してから編集完了ボタンを押してください。</p>
-                <input type="text" name="updater" value="{{ user.get_username }}" hidden>
+                <input type="hidden" name="updater" value="{{ user.get_username }}">
                 <button type="submit">編集完了</button>
                 </form>
             {{ msg }}

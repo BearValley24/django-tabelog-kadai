@@ -12,7 +12,7 @@
       <p>{{ user.get_username }}　さんは有料会員ではない為、クレジットカード情報がありませんでした。</p>
       {% else %}
       <h1>クレジットカード情報の更新または削除</h1>
-      <input type="text" name="kokyaku-pk" value="{{ user.pk }}" hidden>
+      <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
       <hr />
         <div class="cardinfo">
           <h3>現在のカード情報</h3>
@@ -46,14 +46,14 @@
               <option value="12">12月</option>
             </select>
             <input type="tel" name="cvc" placeholder="CVC(3桁の数値)" maxlength="3" minlength="3" required>
-            <input type="text" name="kokyaku-pk" value="{{ user.pk }}" hidden>
+            <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
             <button type="submit" name="cardinfo-update">現在の支払い設定のカード情報を更新</button>
           </form>
           <br />
           <h3>カード情報を削除</h3>
           <form action="" method="POST"> 
             {% csrf_token %}
-            <input type="text" name="kokyaku-pk" value="{{ user.pk }}" hidden>
+            <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
             <button type="submit" name="cardinfo-delete">現在の支払い設定のカード情報を削除</button>
           </form>
         </div>

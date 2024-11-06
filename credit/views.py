@@ -176,6 +176,9 @@ def SaveTransaction(product_name, customer_name, customer_email, amount, custome
 # 新規追加
 class SubscriptionCancel(View):
     context = {'style_css_date': get_modified_date('css/subscription.css')}
+    def get(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return render(request, 'credit/subscription.html', context)
     # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
     def post(self, request, *args, **kwargs):
         kokyaku = request.POST.get('kokyaku-pk').first() # リクエストしてきたユーザーのPKを取得
