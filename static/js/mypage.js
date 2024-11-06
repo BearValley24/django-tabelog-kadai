@@ -227,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardInfoDiv = document.getElementById('cardinfo-info');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const cardinfoData = cardInfoDiv.dataset.cardinfo;
-            const userpkInfoData = cardInfoDiv.dataset.userpk;
             if (cardInfoDiv) {
                 const cardinfo = `
                     <h2>クレジットカード情報の編集または削除</h2>
@@ -235,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <small>クレジットカードが登録されていない場合はエラーメッセージが表示されます。</small>
                     <br>
                     <a href="${cardinfoData}">クレジットカード情報の編集または削除手続きへ進む</a>
-                    <input type="hidden" name="kokyaku-pk" value="${userpkInfoData}">
                 `;
                 // mContentに表示する
                 document.querySelector('.mContent').innerHTML = cardinfo;

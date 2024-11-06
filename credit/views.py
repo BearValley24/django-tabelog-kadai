@@ -175,12 +175,12 @@ def SaveTransaction(product_name, customer_name, customer_email, amount, custome
 
 # 新規追加
 class SubscriptionCancel(View):
-    context = {'style_css_date': get_modified_date('css/subscription.css')}
     def get(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = {'style_css_date': get_modified_date('css/subscription.css')}
         return render(request, 'credit/subscription.html', context)
     # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
     def post(self, request, *args, **kwargs):
+        context = {'style_css_date': get_modified_date('css/subscription.css')}
         kokyaku = request.POST.get('kokyaku-pk').first() # リクエストしてきたユーザーのPKを取得
         transactions = Transaction.objects.filter(user_connection=kokyaku)
         if transactions.exists(): 
@@ -205,11 +205,11 @@ class SubscriptionCancel(View):
             return render(request, 'credit/subscription.html', context)
 
 class CardinfoUpdateAndDelete(View):
-    context = {'style_css_date': get_modified_date('css/cardinfo.css')}
     # 現在のカード情報を取得
     def get(self, request, *args, **kwargs):
+        context = {'style_css_date': get_modified_date('css/cardinfo.css')}
         # 顧客の PK を取得し、データベースから顧客を特定
-        kokyaku_pk = request.GET.get('kokyaku-pk')
+        kokyaku_pk = kwargs.get('kokyaku_pk')
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transaction = Transaction.objects.filter(user_connection=kokyaku).first()
 
@@ -257,6 +257,7 @@ class CardinfoUpdateAndDelete(View):
     
     # 新しいクレジットカード情報をデフォルト設定で追加する（古いクレジットカード情報は残る）
     def post(self, request, *args, **kwargs):
+        context = {'style_css_date': get_modified_date('css/cardinfo.css')}
         kokyaku_pk = request.POST.get('kokyaku-pk')
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transaction = Transaction.objects.filter(user_connection=kokyaku).first()

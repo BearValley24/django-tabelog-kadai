@@ -64,8 +64,7 @@
         ></div>
 
         <div id="cardinfo-info"
-            data-cardinfo="{% url 'credit:cardinfo_update_delete' %}"
-            data-userpk="{{ user.pk }}"
+            data-cardinfo="{% url 'credit:cardinfo_update_delete' kokyaku_pk=user.pk %}"
         ></div>
     </div>
 </body>
