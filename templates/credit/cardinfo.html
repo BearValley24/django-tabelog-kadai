@@ -28,10 +28,15 @@
           <form action="" method="POST">
             {% csrf_token %}
             <!--カード情報は全て入力必須-->
-            <input type="tel" name="card-number" placeholder="14桁の数値(スペース、ハイフン不要)" maxlength="14" minlength="14" required>
-            <small>例：カードの有効期限が2024年12月の場合、「24」と入力し「12月」をプルダウンから選択してください。</small>
-            <input type="tel" name="exp-year" maxlength="2" minlength="2" required>
-            <select name="exp-month" required>
+            <label for="card-number">クレジットカード番号</label>
+            <input type="tel" name="card-number" id="card-number" maxlength="14" minlength="14" size="14" required>
+            <small>14桁のカード番号を入力してください。(スペース、ハイフン不要)</small>
+            
+            <label for="exp-year">有効期限：年</label>
+            <input type="tel" name="exp-year" id="exp-year" maxlength="2" minlength="2" size="2" required>
+            
+            <label for="exp-month">有効期限：月</label>
+            <select name="exp-month" id="exp-month" required>
               <option value="1" selected>1月</option>
               <option value="2">2月</option>
               <option value="3">3月</option>
@@ -45,11 +50,15 @@
               <option value="11">11月</option>
               <option value="12">12月</option>
             </select>
-            <input type="tel" name="cvc" placeholder="CVC(3桁の数値)" maxlength="3" minlength="3" required>
+            <small>例：カードの有効期限が2024年12月の場合、「24」と入力し「12月」をプルダウンから選択してください。</small>
+            
+            <label for="cvc">CVC番号</label>
+            <input type="tel" name="cvc" id="cvc"  maxlength="3" minlength="3" required>
+            
             <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
             <button type="submit" name="cardinfo-update">現在の支払い設定のカード情報を更新</button>
           </form>
-          <br />
+          <hr />
           <h3>カード情報を削除</h3>
           <form action="" method="POST"> 
             {% csrf_token %}

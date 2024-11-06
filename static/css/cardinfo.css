@@ -16,6 +16,17 @@ section {
     color: black; 
 }
 
+form {
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+form label {
+    margin-right: 10px;
+}
+
 .result-info {
     font-weight: bold;
 }
