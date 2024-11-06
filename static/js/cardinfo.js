@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         token: result.token.id,
-                        /*kokyaku_pk: user_pk,*/
+                        kokyaku_pk: user_pk,
                     })
                 })
                 .then(response => response.json())

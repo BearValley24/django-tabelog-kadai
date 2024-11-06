@@ -303,7 +303,7 @@ class CardinfoUpdateAndDelete(View):
                 context = {'err': f'エラーが発生しました。: {e.user_message}'}
                 return render(request, 'credit/cardinfo.html', context)
             
-
+   
 @csrf_exempt
 def update_card(request):
     if request.method == 'POST':
@@ -311,12 +311,11 @@ def update_card(request):
             # JSONデータの取得
             data = json.loads(request.body)
             token = data.get('token')
-            #kokyaku_pk = data.get('kokyaku_pk')  # JSONからkokyaku-pkを取得
-            kokyaku_pk = '1'
+            kokyaku_pk = data.get('kokyaku_pk')  # JSONからkokyaku-pkを取得
+
             if not token or not kokyaku_pk:
                 return JsonResponse({'success': False, 'message': 'トークンまたは顧客IDが提供されていません。'}, status=400)
 
-            # ユーザー情報を取得
             kokyaku = get_object_or_404(User, pk=kokyaku_pk)
             transaction = Transaction.objects.filter(user_connection=kokyaku).first()
 
@@ -324,32 +323,18 @@ def update_card(request):
                 return JsonResponse({'success': False, 'message': '指定された顧客に関連するトランザクションが見つかりません。'}, status=404)
 
             customer_id = transaction.customer_id
-            print(customer_id)
 
             # Stripeで顧客のデフォルトカード情報を更新
-            # 既存の顧客のデフォルトの支払い方法を更新
-            payment_method = stripe.PaymentMethod.attach(
-                token,  # 新しいトークン
-            )
-
-            # 顧客のデフォルト支払い方法を新しいカードに変更
             customer = stripe.Customer.modify(
                 customer_id,
-                source = token 
+                source=token  # 新しいトークンでデフォルトカードを更新
             )
-            #customer = stripe.Customer.modify(
-            #    customer_id,
-            #    default_source=payment_method.id, 
-            #    name = 'New Name'
-            #)
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
         except stripe.error.StripeError as e:
-            print(e)
             return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)
         except Exception as e:
-            print(e)
             return JsonResponse({'success': False, 'message': f'予期しないエラーが発生しました: {str(e)}'}, status=500)
     else:
-        return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)
+        return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)    
