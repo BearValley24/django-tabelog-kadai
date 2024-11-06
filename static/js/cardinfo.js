@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('error-message').textContent = result.error.message;
             } else {
                 // DjangoのAPIエンドポイントにトークンを送信
-                fetch('/update-card/', {  // エンドポイントに合わせて変更
+                fetch('/credit/update-card/', {  // エンドポイントに合わせて変更
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: result.token.id })
