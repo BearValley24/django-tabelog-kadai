@@ -85,30 +85,6 @@ class IndexView(ListView):
                 shop_list = Shop.objects.all()
         return shop_list
 
-class SignupView(CreateView):
-    # ユーザー登録用ビュー
-    form_class = SignUpForm # 作成した登録用フォームを設定
-    template_name = 'accounts/signup.html' 
-    success_url = reverse_lazy('accounts:index') # ユーザー作成後のリダイレクト先ページ
-
-    def form_valid(self, form):
-        # ユーザー作成後にそのままログイン状態にする設定
-        response = super().form_valid(form)
-        account_id = form.cleaned_data.get('account_id')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(account_id=account_id, password=password)
-        login(self.request, user)
-        return response
-
-class LoginView(BaseLoginView):
-    # ログインビュー
-    form_class = LoginForm
-    template_name = 'accounts/login.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['style_css_date'] = get_modified_date('css/login.css')
-        return context
-
 class SignupAndLoginView(View):
     def get(self, request, *args, **kwargs):
         signup_form = SignUpForm()

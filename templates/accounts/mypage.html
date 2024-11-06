@@ -17,7 +17,8 @@
             <a id="schedule-button" href="#">予約履歴</a>
             <a id="review-button" href="#">レビュー履歴</a>
             <a id="favorite-button" href="#">お気に入り店舗</a>
-            <a id="rank-button" href="#">有料会員登録</a>
+            <a id="rank-button" href="#">有料会員登録または解約</a>
+            <a id="cardinfo-button" href="#">クレジットカード情報の編集と削除</a>
             <a id="logout-button" href="#">ログアウト</a>
             <a id="withdrawal-button" href="#">退会</a>
         </div>
@@ -59,6 +60,11 @@
 
         <div id="rank-info"
             data-rank="{% url 'credit:product_top_page' %}"
+            data-subscription="{% url 'credit:subscription_cancel' %}"
+        ></div>
+
+        <div id="cardinfo-info"
+            data-cardinfo="{% url 'credit:cardinfo_update_delete' %}"
         ></div>
     </div>
 </body>

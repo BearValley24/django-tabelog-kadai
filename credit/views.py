@@ -175,11 +175,11 @@ def SaveTransaction(product_name, customer_name, customer_email, amount, custome
 
 # 新規追加
 class SubscriptionCancel(View):
+    context = {'style_css_date': get_modified_date('css/subscription.css')}
     # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
     def post(self, request, *args, **kwargs):
-        kokyaku = request.POST.get('kokyaku_pk').first() # リクエストしてきたユーザーのPKを取得
+        kokyaku = request.POST.get('kokyaku-pk').first() # リクエストしてきたユーザーのPKを取得
         transactions = Transaction.objects.filter(user_connection=kokyaku)
-
         if transactions.exists(): 
             targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
             kokyaku.rank_is_free = True # 会員ランクを変更
@@ -194,85 +194,125 @@ class SubscriptionCancel(View):
             targetTransaction.delete() 
 
             context = {'suc': 'サブスクリプションを解約しました。'}
-            return render(request, 'shops/result_success.html', context)
+            return render(request, 'credit/subscription.html', context)
         else:
             kokyaku.rank_is_free = True # 会員ランクを変更
             kokyaku.save()  
             context = {'err': 'あなたに紐づくサブスクリプションはありませんでした。'}          
-            return render(request, 'shops/result_failure.html', context)
+            return render(request, 'credit/subscription.html', context)
 
-class CardinfoUpdate(View):
+class CardinfoUpdateAndDelete(View):
+    context = {'style_css_date': get_modified_date('css/cardinfo.css')}
+    # 現在のカード情報を取得
+    def get(self, request, *args, **kwargs):
+        # 顧客の PK を取得し、データベースから顧客を特定
+        kokyaku_pk = request.GET.get('kokyaku-pk')
+        kokyaku = get_object_or_404(User, pk=kokyaku_pk)
+        transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+
+        if not transaction:
+            context = {'fatal_err': 'サブスクリプション契約情報が見つかりませんでした。'}
+            return render(request, 'credit/cardinfo.html', context)
+
+        customer_id = transaction.customer_id
+
+        try:
+            # 顧客に紐づくカード情報を取得
+            payment_methods = stripe.PaymentMethod.list(
+                customer=customer_id,
+                type="card"
+            )
+
+            if not payment_methods['data']:
+                context = {'err': 'カード情報が登録されていません。'}
+                return render(request, 'credit/cardinfo.html', context)
+
+            # デフォルトの支払い方法が指定されているかチェック
+            default_payment_method_id = stripe.Customer.retrieve(customer_id).invoice_settings.default_payment_method
+            default_payment_method = None
+            for pm in payment_methods['data']:
+                if pm.id == default_payment_method_id:
+                    default_payment_method = pm
+                    break
+            if default_payment_method is None:
+                default_payment_method = payment_methods['data'][0]  # 一番目のカードを表示
+
+            # カード情報をコンテキストに格納
+            context = {
+                'card': {
+                    'brand': default_payment_method.card.brand,  # カードブランド
+                    'last4': default_payment_method.card.last4,  # カード番号の下4桁
+                    'exp_month': default_payment_method.card.exp_month,  # 有効期限の月
+                    'exp_year': default_payment_method.card.exp_year,    # 有効期限の年
+                }
+            }
+            return render(request, 'credit/cardinfo.html', context)
+
+        except stripe.error.StripeError as e:
+            context = {'err': f'エラーが発生しました: {e.user_message}'}
+            return render(request, 'shops/result_failure.html', context)
+    
     # 新しいクレジットカード情報をデフォルト設定で追加する（古いクレジットカード情報は残る）
     def post(self, request, *args, **kwargs):
-        kokyaku_pk = request.POST.get('kokyaku_pk')
+        kokyaku_pk = request.POST.get('kokyaku-pk')
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transaction = Transaction.objects.filter(user_connection=kokyaku).first()
 
         if not transaction:
             context = {'err': '顧客情報が見つかりませんでした。'}
-            return render(request, 'shops/result_failure.html', context)
+            return render(request, 'credit/cardinfo.html', context)
 
-        update_customer_id = transaction.customer_id
+        target_customer_id = transaction.customer_id
         
-        # 新しいカード情報を受け取る
-        number = request.POST.get('card_number')   # 16桁のカード番号
-        exp_month = request.POST.get('exp_month')  # 1-12の数値
-        exp_year = request.POST.get('exp_year')    # 4桁の年数
-        cvc = request.POST.get('cvc')              # 3桁のCVC
+        if 'cardinfo-update' in request.POST:
+            # 新しいカード情報を受け取る
+            number = request.POST.get('card-number')   # 16桁のカード番号
+            exp_month = request.POST.get('exp-month')  # 1-12の数値
+            exp_year = request.POST.get('exp-year')    # 2桁の年数(下2桁)
+            cvc = request.POST.get('cvc')              # 3桁のCVC
 
-        try:
-            # 新しいカード情報を作成
-            new_payment_method = stripe.PaymentMethod.create(
-                type="card",
-                card={
-                    "number": number,
-                    "exp_month": exp_month,
-                    "exp_year": exp_year,
-                    "cvc": cvc,
-                },
-            )
+            try:
+                # 新しいカード情報を作成
+                new_payment_method = stripe.PaymentMethod.create(
+                    type="card",
+                    card={
+                        "number": number,
+                        "exp_month": exp_month,
+                        "exp_year": exp_year,
+                        "cvc": cvc,
+                    },
+                )
 
-            # 新しいカード情報を顧客に紐づける
-            stripe.PaymentMethod.attach(
-                new_payment_method.id,
-                customer=update_customer_id,
-            )
+                # 新しいカード情報を顧客に紐づける
+                stripe.PaymentMethod.attach(
+                    new_payment_method.id,
+                    customer=target_customer_id,
+                )
 
-            # 新しいカード情報をデフォルトに設定する
-            stripe.Customer.modify(
-                update_customer_id,
-                invoice_settings={
-                    'default_payment_method': new_payment_method.id,
-                }
-            )
+                # 新しいカード情報をデフォルトに設定する
+                stripe.Customer.modify(
+                    target_customer_id,
+                    invoice_settings={
+                        'default_payment_method': new_payment_method.id,
+                    }
+                )
 
-            context = {'suc': 'クレジットカード情報を更新しました。'}
-            return render(request, 'shops/result_success.html', context)
+                context = {'suc': 'クレジットカード情報を更新しました。'}
+                return render(request, 'credit/cardinfo.html', context)
 
-        except stripe.error.StripeError as e:
-            context = {'err': f'エラーが発生しました。: {e.user_message}'}
-            return render(request, 'shops/result_failure.html', context)
+            except stripe.error.StripeError as e:
+                context = {'err': f'エラーが発生しました。: {e.user_message}'}
+                return render(request, 'credit/cardinfo.html', context)
+            
+        elif 'cardinfo-delete' in request.POST:
+            # stripeからリクエストしてきた顧客情報をクレジットカード情報ごと削除する
+            try:
+                # Stripe上の顧客情報を削除
+                stripe.Customer.delete(target_customer_id)
+                context = {'suc': 'クレジットカード情報を削除しました。'}
+                return render(request, 'credit/cardinfo.html', context)
 
+            except stripe.error.StripeError as e:
+                context = {'err': f'エラーが発生しました。: {e.user_message}'}
+                return render(request, 'credit/cardinfo.html', context)
 
-class CardinfoDelete(View):
-    # stripeからリクエストしてきた顧客情報をクレジットカード情報ごと削除する
-    def post(self, request, *args, **kwargs):
-        kokyaku_pk = request.POST.get('kokyaku_pk')
-        kokyaku = get_object_or_404(User, pk=kokyaku_pk)
-        transaction = Transaction.objects.filter(user_connection=kokyaku).first()
-
-        if not transaction:
-            context = {'err': '顧客情報が見つかりませんでした。'}
-            return render(request, 'shops/result_failure.html', context)
-
-        delete_customer_id = transaction.customer_id
-
-        try:
-            # Stripe上の顧客情報を削除
-            stripe.Customer.delete(delete_customer_id)
-            context = {'suc': 'クレジットカード情報を削除しました。'}
-            return render(request, 'shops/result_success.html', context)
-
-        except stripe.error.StripeError as e:
-            context = {'err': f'エラーが発生しました。: {e.user_message}'}
-            return render(request, 'shops/result_failure.html', context)

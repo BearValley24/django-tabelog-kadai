@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const favoriteButton = document.getElementById('favorite-button');
     const withdrawalButton = document.getElementById('withdrawal-button');
     const rankButton = document.getElementById('rank-button');
+    const cardinfoButton = document.getElementById('cardinfo-button');
 
     if (infoUpdateButton) {
         infoUpdateButton.addEventListener('click', function() {
@@ -203,15 +204,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const rankInfoDiv = document.getElementById('rank-info');
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const rankData = rankInfoDiv.dataset.rank;
+            const rankSubscription = rankInfoDiv.dataset.subscription;
             if (rankInfoDiv) {
                 const rank = `
                     <h2>有料会員に登録</h2>
                     <p>月額300円のサブスクリプションプランです。</p>
                     <br>
                     <a href="${rankData}">有料会員登録手続きへ進む</a>
+                    <hr />
+                    <h2>有料会員を解約</h2>
+                    <p>サブスクリプションを解約します。</p>
+                    <br>
+                    <a href="${rankSubscription}">有料会員を解約し無料会員への変更手続きへ進む</a>
                 `;
                 // mContentに表示する
                 document.querySelector('.mContent').innerHTML = rank;
+            }
+        });
+    }
+    if (cardinfoButton) {
+        cardinfoButton.addEventListener('click', function() {
+            const cardInfoDiv = document.getElementById('cardinfo-info');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const cardinfoData = cardInfoDiv.dataset.cardinfo;
+            if (cardInfoDiv) {
+                const cardinfo = `
+                    <h2>クレジットカード情報の編集または削除</h2>
+                    <p>クレジットカード情報の編集または削除を行います。</p>
+                    <small>クレジットカードが登録されていない場合はエラーメッセージが表示されます。</small>
+                    <br>
+                    <a href="${cardinfoData}">クレジットカード情報の編集または削除手続きへ進む</a>
+                `;
+                // mContentに表示する
+                document.querySelector('.mContent').innerHTML = cardinfo;
             }
         });
     }

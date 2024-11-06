@@ -8,7 +8,9 @@ app_name = "credit"
 urlpatterns = [
     path('credit/', views.ProductTopPageView.as_view(), name='product_top_page'),
     path("create-checkout-session/<pk>/", views.CreateCheckoutSessionView.as_view(), name="create-checkout-session"),    # 個別商品決済画面
-    path("webhook/", views.stripe_webhook, name="webhook"),   
+    path("webhook/", views.stripe_webhook, name="webhook"),  
+    path('subscription/', views.SubscriptionCancel.as_view(), name='subscription_cancel'),
+    path('cardinfo/', views.CardinfoUpdateAndDelete.as_view(), name='cardinfo_update_delete'),
 ]
 
 # メディア表示

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}サブスクリプション画面{% endblock %}
+{% load static %}
+{% block content %}
+<script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<body>
+    <section>
+      <h1>サブスクリプションの解約</h1>
+      <hr />
+        <div class="subscription">
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="kokyaku-pk" value="{{ user.pk }}" hidden>
+            <button type="submit">サブスクリプションを解約する</button>
+          </form>
+        </div>
+        <div class="result-info">
+          <!--太字と色付け-->
+          {% if suc %}
+          <p>{{ suc }}</p>
+          {% elif err %}
+          <p>{{ err }}</p>
+          {% endif %}
+        </div>       
+    </section>
+    <link rel="stylesheet" href="{% static 'css/subscription.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+
+</body>
+{% endblock %}
