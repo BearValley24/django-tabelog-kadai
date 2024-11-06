@@ -182,7 +182,7 @@ class SubscriptionCancel(View):
         kokyaku_pk = request.POST.get('kokyaku-pk') # リクエストしてきたユーザーのPKを取得
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transactions = Transaction.objects.filter(user_connection=kokyaku)
-        print(f"transaction_" + transactions)
+
         if transactions.exists(): 
             targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
             kokyaku.rank_is_free = True # 会員ランクを変更
