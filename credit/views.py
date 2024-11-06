@@ -58,14 +58,11 @@ class ProductTopPageView(ListView):
 
 
 # 決済画面
-class CreateCheckoutSessionView(View):
-    
+class CreateCheckoutSessionView(View):    
     def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
         # 二重でサブスクリプションに契約することを防止
         if Transaction.objects.filter(user_connection=self.request.user):
-            context['err'] = 'あなたは既にサブスクリプションを契約しています。'
-            print(context)
+            context = {'err': 'あなたは既にサブスクリプションを契約しています。'}
             return render(request, 'shops/result_failure.html', context)
 
         # 商品マスタ呼出
