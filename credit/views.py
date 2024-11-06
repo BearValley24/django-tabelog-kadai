@@ -336,12 +336,12 @@ def update_card(request):
             )
 
             # Stripeで顧客のデフォルトカード情報を更新
-            customer = stripe.Customer.modify(
-                customer_id,
-                source=token  # 新しいトークンでデフォルトカードを更新
-            )
+            #customer = stripe.Customer.modify(
+            #    customer_id,
+            #    source=token  # 新しいトークンでデフォルトカードを更新
+            #)
             
-            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
+            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。', 'redirect_url':'/shops/result_success/', 'suc':'カード情報を更新しました。マイページから再確認してください。'})
 
         except stripe.error.StripeError as e:
             return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)
