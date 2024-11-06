@@ -324,6 +324,7 @@ def update_card(request):
                 return JsonResponse({'success': False, 'message': '指定された顧客に関連するトランザクションが見つかりません。'}, status=404)
 
             customer_id = transaction.customer_id
+            print(customer_id)
 
             # Stripeで顧客のデフォルトカード情報を更新
             # 既存の顧客のデフォルトの支払い方法を更新
@@ -332,7 +333,11 @@ def update_card(request):
             )
 
             # 顧客のデフォルト支払い方法を新しいカードに変更
-            customer = stripe.Customer.modify(
+            #customer = stripe.Customer.modify(
+            #    customer_id,
+            #    default_source=payment_method.id, 
+            #)
+            stripe.Customer.modify(
                 customer_id,
                 default_source=payment_method.id, 
             )
