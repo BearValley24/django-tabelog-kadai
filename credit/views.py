@@ -329,7 +329,11 @@ def update_card(request):
                 customer_id,
                 source=token  # 新しいトークンでデフォルトカードを更新
             )
-
+            # 怪しいポイント
+            payment_method = stripe.PaymentMethod.attach(
+                token,  # 新しいトークン
+                customer = customer_id
+            )
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
         except stripe.error.StripeError as e:
