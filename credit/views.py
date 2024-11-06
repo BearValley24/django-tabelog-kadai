@@ -343,7 +343,7 @@ def update_card(request):
                 }
             )
             
-            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。', 'redirect_url':'/shops/result_success/', 'suc':'カード情報を更新しました。マイページから再確認してください。'})
+            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。', 'redirect_url':'/shops/result_success/'})
 
         except stripe.error.StripeError as e:
             return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)

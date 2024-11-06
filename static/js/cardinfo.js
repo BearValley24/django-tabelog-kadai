@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.success) {
                         console.log("カード情報が更新されました。");
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        }
                     } else {
                         console.log("カード情報の更新に失敗しました。");
                     }
