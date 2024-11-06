@@ -285,88 +285,24 @@ class CardinfoUpdateAndDelete(View):
             context = {'err': '顧客情報が見つかりませんでした。'}
             return render(request, 'credit/cardinfo.html', context)
 
-        target_customer_id = transaction.customer_id
-        
-        if 'cardinfo-update' in request.POST:
-            # 新しいカード情報を受け取る
-            number = request.POST.get('card-number')   # 16桁のカード番号
-            exp_month = request.POST.get('exp-month')  # 1-12の数値
-            exp_year = request.POST.get('exp-year')    # 2桁の年数(下2桁)
-            cvc = request.POST.get('cvc')              # 3桁のCVC
-            name = request.POST.get('name')            # カード名義
-
-            try:
-                # 新しいカード情報を作成
-                new_payment_method = stripe.PaymentMethod.create(
-                    type="card",
-                    card={
-                        "number": number,
-                        "exp_month": exp_month,
-                        "exp_year": exp_year,
-                        "cvc": cvc,
-                    },
-                    billing_details={
-                        "name":name,
-                    }
-                )
-
-                # 新しいカード情報を顧客に紐づける
-                stripe.PaymentMethod.attach(
-                    new_payment_method.id,
-                    customer=target_customer_id,
-                )
-
-                # 新しいカード情報をデフォルトに設定する
-                stripe.Customer.modify(
-                    target_customer_id,
-                    invoice_settings={
-                        'default_payment_method': new_payment_method.id,
-                    }
-                )
-                
-                context = {
-                    'suc': 'クレジットカード情報を更新しました。',
-                    'style_css_date': get_modified_date('css/cardinfo.css'),
-                    'style_js_date': get_modified_date('css/cardinfo.js')
-                }
-                return render(request, 'credit/cardinfo.html', context)
-
-            except stripe.error.StripeError as e:
-                context = {'err': f'エラーが発生しました。: {e.user_message}'}
-                return render(request, 'credit/cardinfo.html', context)
+        target_customer_id = transaction.customer_id 
             
-        elif 'cardinfo-delete' in request.POST:
+        if 'cardinfo-delete' in request.POST:
             # stripeからリクエストしてきた顧客情報をクレジットカード情報ごと削除する
             try:
                 # Stripe上の顧客情報を削除
                 stripe.Customer.delete(target_customer_id)
-                context = {'suc': 'クレジットカード情報を削除しました。'}
+                transaction.delete()
+                # 会員ランクを変更
+                kokyaku.rank_is_free = True 
+                kokyaku.save()
+                context = {'suc': 'クレジットカード情報の削除とサブスクリプションの解約をしました。'}
                 return render(request, 'credit/cardinfo.html', context)
 
             except stripe.error.StripeError as e:
                 context = {'err': f'エラーが発生しました。: {e.user_message}'}
                 return render(request, 'credit/cardinfo.html', context)
             
-        elif 'cardinfo-update2' in request.POST:
-            kokyaku_pk = request.POST.get('kokyaku-pk')
-            kokyaku = get_object_or_404(User, pk=kokyaku_pk)
-            transaction = Transaction.objects.filter(user_connection=kokyaku).first()
-             # フロントエンドから送信されたトークンを取得
-            token = request.POST.get('stripeToken')
-
-            # 顧客IDを取得（ここではダミーの顧客IDを設定しています。実際にはユーザー情報から取得）
-            customer_id = transaction.customer_id
-
-            try:
-                # Stripe APIを使ってカードを顧客に追加
-                stripe.Customer.modify(
-                    customer_id,
-                    source=token
-                )
-                return JsonResponse({"message": "カード情報が正常に更新されました"}, status=200)
-            except stripe.error.StripeError as e:
-                # エラー処理
-                return JsonResponse({"error": str(e)}, status=400)
 
 @csrf_exempt
 def update_card(request):

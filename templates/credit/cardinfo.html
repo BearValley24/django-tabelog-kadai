@@ -43,6 +43,8 @@
     <hr />
     <div class="cardinfo-delete">
       <h3>カード情報を削除</h3>
+      <small>あなたのクレジットカード情報を全て削除します。</small>
+      <small>クレジットカード情報を削除すると自動的にサブスクリプションが解約されます。</small>
       <form action="" method="POST"> 
         {% csrf_token %}
         <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">

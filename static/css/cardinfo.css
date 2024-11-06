@@ -13,8 +13,8 @@
 
 /* カード要素のスタイル */
 #card-element-zone {
-    width: 300px;                 /* カード要素の幅を調整 */
-    max-width: 300px;            /* 最大幅を設定 */
+    width: 400px;                 /* カード要素の幅を調整 */
+    max-width: 400px;            /* 最大幅を設定 */
     background-color: #ffffff;   /* 背景色を白に */
     padding: 20px;               /* パディングを追加 */
     border-radius: 8px;          /* 角を丸くする */
