@@ -187,9 +187,19 @@ class SubscriptionCancel(View):
             targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
             kokyaku.rank_is_free = True # 会員ランクを変更
             kokyaku.save()
-            # Stripeの処理（例: Stripe APIを使ったキャンセル処理）
+            # トランザクションごとに処理
             for transaction in transactions:
-                 stripe.Subscription.delete(transaction.customer_id)
+                try:
+                    # 顧客IDに関連するサブスクリプションを取得
+                    subscriptions = stripe.Subscription.list(customer=transaction.customer_id)
+
+                    for subscription in subscriptions.auto_paging_iter():
+                        # サブスクリプションIDを取得して削除
+                        stripe.Subscription.delete(subscription.id)
+
+                except stripe.error.StripeError as e:
+                    # Stripeのエラーを処理
+                    print(f"Stripe error: {e}")
 
             # トランザクションを削除
             transactions.delete()
