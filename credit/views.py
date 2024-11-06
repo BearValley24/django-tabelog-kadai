@@ -335,7 +335,6 @@ def update_card(request):
             customer = stripe.Customer.modify(
                 customer_id,
                 source = token,
-                invoice_settings={'default_payment_method': payment_method.id}
             )
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。', 'redirect_url':'/shops/result_success/', 'suc':'クレジットカード情報を更新しました。'})
