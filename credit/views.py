@@ -316,6 +316,7 @@ def update_card(request):
             if not token or not kokyaku_pk:
                 return JsonResponse({'success': False, 'message': 'トークンまたは顧客IDが提供されていません。'}, status=400)
 
+            # ユーザー情報を取得
             kokyaku = get_object_or_404(User, pk=kokyaku_pk)
             transaction = Transaction.objects.filter(user_connection=kokyaku).first()
 
@@ -325,9 +326,15 @@ def update_card(request):
             customer_id = transaction.customer_id
 
             # Stripeで顧客のデフォルトカード情報を更新
+            # 既存の顧客のデフォルトの支払い方法を更新
+            payment_method = stripe.PaymentMethod.attach(
+                token,  # 新しいトークン
+            )
+
+            # 顧客のデフォルト支払い方法を新しいカードに変更
             customer = stripe.Customer.modify(
                 customer_id,
-                source=token  # 新しいトークンでデフォルトカードを更新
+                invoice_settings={'default_payment_method': payment_method.id}
             )
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
@@ -337,4 +344,4 @@ def update_card(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'予期しないエラーが発生しました: {str(e)}'}, status=500)
     else:
-        return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)    
+        return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)
