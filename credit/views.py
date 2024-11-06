@@ -181,7 +181,7 @@ class SubscriptionCancel(View):
     # サブスクリプションの解除だけでクレジットカード情報はstripeに残る
     def post(self, request, *args, **kwargs):
         context = {'style_css_date': get_modified_date('css/subscription.css')}
-        kokyaku = request.POST.get('kokyaku-pk').first() # リクエストしてきたユーザーのPKを取得
+        kokyaku = request.POST.get('kokyaku-pk') # リクエストしてきたユーザーのPKを取得
         transactions = Transaction.objects.filter(user_connection=kokyaku)
         if transactions.exists(): 
             targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
