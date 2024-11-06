@@ -330,8 +330,13 @@ def update_card(request):
                 source=token  # 新しいトークンでデフォルトカードを更新
             )
             # 怪しいポイント
-            payment_method = stripe.PaymentMethod.attach(
-                token,  # 新しいトークン
+            print(token)
+            payment_method = stripe.PaymentMethod.create(
+                type="card",
+                card={"token": token}  # `token` には `tok_xxx` の形式のトークンを指定
+            )
+            stripe.PaymentMethod.attach(
+                payment_method.id,  # 新しいトークン
                 customer = customer_id
             )
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
