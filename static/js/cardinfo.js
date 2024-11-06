@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var stripe_APIKey = document.getElementById('stripe_APIKey').value;
-    console.log(stripe_APIKey);
+    const stripe_APIKey = document.getElementById('stripe_APIKey').value;
+    const user_pk = document.getElementById('user-pk').value;
 
     var stripe = Stripe(stripe_APIKey);
     var elements = stripe.elements();
@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch('/credit/update-card/', {  // エンドポイントに合わせて変更
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: result.token.id })
+                    body: JSON.stringify({ 
+                        token: result.token.id,
+                        kokyaku_pk: user_pk,
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {

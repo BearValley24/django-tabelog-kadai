@@ -308,13 +308,22 @@ class CardinfoUpdateAndDelete(View):
 def update_card(request):
     if request.method == 'POST':
         try:
+            # JSONデータの取得
             data = json.loads(request.body)
             token = data.get('token')
-            kokyaku_pk = request.POST.get('kokyaku-pk')
+            kokyaku_pk = data.get('kokyaku_pk')  # JSONからkokyaku-pkを取得
+
+            if not token or not kokyaku_pk:
+                return JsonResponse({'success': False, 'message': 'トークンまたは顧客IDが提供されていません。'}, status=400)
+
             kokyaku = get_object_or_404(User, pk=kokyaku_pk)
             transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+
+            if not transaction:
+                return JsonResponse({'success': False, 'message': '指定された顧客に関連するトランザクションが見つかりません。'}, status=404)
+
             customer_id = transaction.customer_id
-            
+
             # Stripeで顧客のデフォルトカード情報を更新
             customer = stripe.Customer.modify(
                 customer_id,
@@ -322,8 +331,10 @@ def update_card(request):
             )
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
-        
+
+        except stripe.error.StripeError as e:
+            return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)
         except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+            return JsonResponse({'success': False, 'message': f'予期しないエラーが発生しました: {str(e)}'}, status=500)
     else:
-        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+        return JsonResponse({'success': False, 'message': 'Invalid request method. POSTのみ対応しています。'}, status=400)    
