@@ -12,17 +12,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // フォームの送信時にトークン化
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    stripe.createToken(card).then(function(result) {
-        if (result.error) {
-        // エラー処理
-        document.getElementById('error-message').textContent = result.error.message;
-        } else {
-        // トークンをサーバーに送信
-        var token = result.token.id;
-        // サーバーにトークンを送信して決済処理
-        console.log(token);
-        }
-    });
+        event.preventDefault();
+        stripe.createToken(card).then(function(result) {
+            if (result.error) {
+                document.getElementById('error-message').textContent = result.error.message;
+            } else {
+                // DjangoのAPIエンドポイントにトークンを送信
+                fetch('/update-card/', {  // エンドポイントに合わせて変更
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: result.token.id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("カード情報が更新されました。");
+                    } else {
+                        console.log("カード情報の更新に失敗しました。");
+                    }
+                });
+            }
+        });
     });
 });

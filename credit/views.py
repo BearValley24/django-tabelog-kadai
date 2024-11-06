@@ -182,6 +182,7 @@ class SubscriptionCancel(View):
         kokyaku_pk = request.POST.get('kokyaku-pk') # リクエストしてきたユーザーのPKを取得
         kokyaku = get_object_or_404(User, pk=kokyaku_pk)
         transactions = Transaction.objects.filter(user_connection=kokyaku)
+        print(f"transaction_" + transactions)
         if transactions.exists(): 
             targetTransaction = Transaction.objects.filter(user_connection=kokyaku)
             kokyaku.rank_is_free = True # 会員ランクを変更
@@ -357,3 +358,26 @@ class CardinfoUpdateAndDelete(View):
                 # エラー処理
                 return JsonResponse({"error": str(e)}, status=400)
 
+@csrf_exempt
+def update_card(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            token = data.get('token')
+            kokyaku_pk = request.POST.get('kokyaku-pk')
+            kokyaku = get_object_or_404(User, pk=kokyaku_pk)
+            transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+            customer_id = transaction.customer_id
+            
+            # Stripeで顧客のデフォルトカード情報を更新
+            customer = stripe.Customer.modify(
+                customer_id,
+                source=token  # 新しいトークンでデフォルトカードを更新
+            )
+
+            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
+        
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
