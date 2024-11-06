@@ -342,7 +342,7 @@ def update_card(request):
                 default_source=payment_method.id, 
             )
 
-            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。', 'redirect_url':'/shops/result_success/', 'suc':'クレジットカード情報を更新しました。'})
+            return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
         except stripe.error.StripeError as e:
             return JsonResponse({'success': False, 'message': f'Stripe APIエラー: {str(e)}'}, status=500)
