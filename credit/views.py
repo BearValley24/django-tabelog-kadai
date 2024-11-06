@@ -324,11 +324,6 @@ def update_card(request):
 
             customer_id = transaction.customer_id
 
-            # Stripeで顧客のデフォルトカード情報を更新
-            customer = stripe.Customer.modify(
-                customer_id,
-                source=token  # 新しいトークンでデフォルトカードを更新
-            )
             # 怪しいポイント
             print(token)
             payment_method = stripe.PaymentMethod.create(
@@ -339,6 +334,13 @@ def update_card(request):
                 payment_method.id,  # 新しいトークン
                 customer = customer_id
             )
+
+            # Stripeで顧客のデフォルトカード情報を更新
+            customer = stripe.Customer.modify(
+                customer_id,
+                source=token  # 新しいトークンでデフォルトカードを更新
+            )
+            
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
 
         except stripe.error.StripeError as e:
