@@ -2,97 +2,57 @@
 {% block title %}サブスクリプション画面{% endblock %}
 {% load static %}
 {% block content %}
-<script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-<script src="https://js.stripe.com/v3/"></script>
+<head>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<script src="{% static 'js/cardinfo.js' %}{% if style_js_date %}?={{ style_js_date }}{% endif %}"></script> 
+
 
 <body>
-    <section>
-      <p id="stripe_APIKey" hidden>{{ stripe_APIKey }}</p>
-
-      {% if fatal_err %}
-      <h1>{{ fatal_err }}</h1>
-      <p>{{ user.get_username }}　さんは有料会員ではない為、クレジットカード情報がありませんでした。</p>
+  {% if fatal_err %}
+  <div class="fatal">
+    <h1>{{ fatal_err }}</h1>
+    <p>{{ user.get_username }}　さんは有料会員ではない為、クレジットカード情報がありませんでした。</p>
+  </div>
+  {% else %}
+  <div id="card-element-container">
+    <h1>クレジットカード情報の更新または削除</h1>
+    <input type="hidden" id="stripe_APIKey" value="{{ stripe_APIKey }}">
+    <hr />
+    <div class="cardinfo">
+      <h3>現在のカード情報</h3>
+      {% if card %}
+      <p>カードブランド: {{ card.brand }}</p>
+      <p>カード番号の下4桁: **** **** **** {{ card.last4 }}</p>
+      <p>有効期限: {{ card.exp_month }}/{{ card.exp_year }}</p>
       {% else %}
-      <h1>クレジットカード情報の更新または削除</h1>
-      <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
-      <hr />
-        <div class="cardinfo">
-          <h3>現在のカード情報</h3>
-          {% if card %}
-          <p>カードブランド: {{ card.brand }}</p>
-          <p>カード番号の下4桁: **** **** **** {{ card.last4 }}</p>
-          <p>有効期限: {{ card.exp_month }}/{{ card.exp_year }}</p>
-          {% else %}
-          <p>カード情報が見つかりませんでした。</p>
-          {% endif %}
-          <hr />
-          <h3>カード情報を更新</h3>
-          <form action="" method="POST" id="payment-form">
-            {% csrf_token %}
-            <div id="card-element"> 
-              <ul>
-                <!--カード情報は全て入力必須-->
-                <li>
-                  <label for="name">カード名義</label>
-                  <input type="text" name="name" id="name" size="14" required>
-                </li>
-                <li>
-                  <label for="card-number">クレジットカード番号</label>
-                  <input type="tel" name="card-number" id="card-number" maxlength="14" minlength="14" size="14" required>
-                </li>
-                <small>14桁のカード番号を入力してください。(スペース、ハイフン不要)</small>
-                <li>
-                  <label for="exp-year">有効期限：年</label>
-                  <input type="tel" name="exp-year" id="exp-year" maxlength="2" minlength="2" size="2" required>
-                </li>
-                <li>
-                  <label for="exp-month">有効期限：月</label>
-                  <select name="exp-month" id="exp-month" required>
-                    <option value="1" selected>1月</option>
-                    <option value="2">2月</option>
-                    <option value="3">3月</option>
-                    <option value="4">4月</option>
-                    <option value="5">5月</option>
-                    <option value="6">6月</option>
-                    <option value="7">7月</option>
-                    <option value="8">8月</option>
-                    <option value="9">9月</option>
-                    <option value="10">10月</option>
-                    <option value="11">11月</option>
-                    <option value="12">12月</option>
-                  </select>
-                </li>
-                <small>例：カードの有効期限が2024年12月の場合、「24」と入力し「12月」をプルダウンから選択してください。</small>
-                <li>
-                  <label for="cvc">CVC番号</label>
-                  <input type="tel" name="cvc" id="cvc"  maxlength="3" minlength="3" required>
-                </li>
-              </ul>
-            </div>
-            <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
-            <button type="submit" name="cardinfo-update">現在の支払い設定のカード情報を更新</button>
-          </form>
-          <div id="error-message"></div>
-          <hr />
-          <h3>カード情報を削除</h3>
-          <form action="" method="POST"> 
-            {% csrf_token %}
-            <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
-            <button type="submit" name="cardinfo-delete">現在の支払い設定のカード情報を削除</button>
-          </form>
-        </div>
-        <div class="result-info">
-          <!--太字と色付け-->
-          {% if suc %}
-          <p id="success">{{ suc }}</p>
-          {% elif err %}
-          <p id="error">{{ err }}</p>
-          {% endif %}
-        </div>  
-      {% endif %}     
-    </section>
-    <link rel="stylesheet" href="{% static 'css/cardinfo.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
-    <script src="{% static 'js/cardinfo.js' %}{% if style_js_date %}?={{ style_js_date }}{% endif %}"></script> 
-
+      <p>カード情報が見つかりませんでした。</p>
+      {% endif %}
+    </div>
+    <hr />
+    <h3>カード情報を更新</h3>
+    <small>新しいクレジットカード情報を枠内の入力し、「カード情報送信ボタン」を押してください。</small>
+    <div id="card-element"> 
+      <form id="payment-form" action="" method="POST">
+        <div id="card-element-zone"></div>
+        <button type="submit">カード情報を送信</button>
+        <div id="error-message"></div>
+      </form>
+    </div>
+    <hr />
+    <div class="cardinfo-delete">
+      <h3>カード情報を削除</h3>
+      <form action="" method="POST"> 
+        {% csrf_token %}
+        <input type="hidden" name="kokyaku-pk" value="{{ user.pk }}">
+        <button type="submit" name="cardinfo-delete">現在の支払い設定のカード情報を削除</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  <link rel="stylesheet" href="{% static 'css/cardinfo.css' %}{% if style_css_date %}?={{ style_css_date }}{% endif %}">
+  
 </body>
+
 {% endblock %}

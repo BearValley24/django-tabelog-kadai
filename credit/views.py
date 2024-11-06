@@ -219,7 +219,7 @@ class CardinfoUpdateAndDelete(View):
         transaction = Transaction.objects.filter(user_connection=kokyaku).first()
 
         if not transaction:
-            context = {'fatal_err': 'サブスクリプション契約情報が見つかりませんでした。'}
+            context = {'fatal_err': 'サブスクリプション契約情報が見つかりませんでした。', 'stripe_APIKey': stripe_APIKey}
             return render(request, 'credit/cardinfo.html', context)
 
         customer_id = transaction.customer_id
@@ -254,7 +254,7 @@ class CardinfoUpdateAndDelete(View):
                     'exp_year': default_payment_method.card.exp_year,    # 有効期限の年
                 },
                 'style_css_date': get_modified_date('css/cardinfo.css'),
-                'style_js_date': get_modified_date('css/cardinfo.js'),
+                'style_js_date': get_modified_date('js/cardinfo.js'),
                 'stripe_APIKey': stripe_APIKey
             }
 
@@ -335,4 +335,25 @@ class CardinfoUpdateAndDelete(View):
             except stripe.error.StripeError as e:
                 context = {'err': f'エラーが発生しました。: {e.user_message}'}
                 return render(request, 'credit/cardinfo.html', context)
+            
+        elif 'cardinfo-update2' in request.POST:
+            kokyaku_pk = request.POST.get('kokyaku-pk')
+            kokyaku = get_object_or_404(User, pk=kokyaku_pk)
+            transaction = Transaction.objects.filter(user_connection=kokyaku).first()
+             # フロントエンドから送信されたトークンを取得
+            token = request.POST.get('stripeToken')
+
+            # 顧客IDを取得（ここではダミーの顧客IDを設定しています。実際にはユーザー情報から取得）
+            customer_id = transaction.customer_id
+
+            try:
+                # Stripe APIを使ってカードを顧客に追加
+                stripe.Customer.modify(
+                    customer_id,
+                    source=token
+                )
+                return JsonResponse({"message": "カード情報が正常に更新されました"}, status=200)
+            except stripe.error.StripeError as e:
+                # エラー処理
+                return JsonResponse({"error": str(e)}, status=400)
 
