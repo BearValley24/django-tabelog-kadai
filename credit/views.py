@@ -144,8 +144,7 @@ def stripe_webhook(request):
         print(session)
 
         # Userの情報を更新
-        user = User.objects.filter(email=customer_email).update(rank_is_free=False)
-        user.save()
+        User.objects.filter(email=customer_email).update(rank_is_free=False)
         print('rank変更完了')
 
         # user_connection情報を更新
