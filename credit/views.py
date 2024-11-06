@@ -337,9 +337,10 @@ def update_card(request):
             #    customer_id,
             #    default_source=payment_method.id, 
             #)
-            stripe.Customer.modify(
+            customer = stripe.Customer.modify(
                 customer_id,
                 default_source=payment_method.id, 
+                name = 'New Name'
             )
 
             return JsonResponse({'success': True, 'message': 'カード情報が更新されました。'})
