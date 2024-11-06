@@ -1,5 +1,5 @@
 /*中央配置*/
-.success {
+.reviewUpdate {
     position: absolute;
     background-color: white;
     display: flex;
@@ -9,12 +9,11 @@
     right: 0;
     bottom: 0;
     left: 0;
-    height: 10%;
+    height: 30%;
     width: 40%;
     text-align: center;
     justify-content: center;
     align-items: center;
-    color: green;
-    font-weight: bold;
-    font-size: large;    
+    color: black;
+ 
 }

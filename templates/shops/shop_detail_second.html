@@ -67,7 +67,9 @@
           <button type="submit" name="review-create">レビュー投稿</button>
         </form>
       </div>
-
+      {% if user.rank_is_free %}
+      <p>お気に入り登録は有料会員限定の機能です。</p>
+      {% else %}
       <div class="okiniiri">
         <form action="" method="post">
           <input type="hidden" name="favorite_shop_name" value="{{ shop_detail.shopName }}">
@@ -76,6 +78,7 @@
           {% csrf_token %}
         </form>
       </div>
+      {% endif %}
       {% else %}
       <div class="input-signup">
         <a href="{% url 'accounts:signup_and_login' %}" class="btn btn-primary">コメントの投稿やお気に入り登録するには会員登録してください。</a>

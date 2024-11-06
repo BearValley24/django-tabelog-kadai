@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     const dataJsonReview = reviewInfoDiv.dataset.review;
                     const reviewData = dataJsonReview ? JSON.parse(dataJsonReview) : null;
-
+                    const reviewDataRank = reviewInfoDiv.dataset.rank;
+                    
+                    
                     // reviewDataがnullまたは空配列かをチェック
                     if (!reviewData || reviewData.length === 0) {
                         document.querySelector('.mContent').innerHTML = `<p>レビューがありません</p>`;
@@ -120,12 +122,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             </thead>
                     `;
                     reviewData.forEach(item => {
+                        if (reviewDataRank === true) {
+                            var urlData = 'コメントの編集は有料会員限定機能です。';
+                        } else {
+                            var urlData = `<a href="${item.cancel_url_review}">編集</a>`
+                        }
+
                         review += `
                             <tr>
                                 <td>${item.reviewShopName}</td>
                                 <td>${'★'.repeat(item.reviewStar)}</td>
                                 <td>${item.reviewComment}</td>
-                                <td><a href="${item.cancel_url_review}">編集</a></td>
+                                <td>${urlData}</td>
                             </tr>
                         `;
                     });
