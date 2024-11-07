@@ -77,7 +77,7 @@ class CreateCheckoutSessionView(View):
             YOUR_DOMAIN = 'http://127.0.0.1:8000'
         else:
             YOUR_DOMAIN = 'https://nagoyameshi-rk3942-2c70d196cf95.herokuapp.com'
-
+        print(os.getenv('DJANGO_ENV'))
         # 決済用セッション
         checkout_session = stripe.checkout.Session.create(
             # 決済方法

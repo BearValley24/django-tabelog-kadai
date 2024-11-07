@@ -16,7 +16,7 @@ from .forms import createForm
 
 import requests 
 
-
+load_dotenv()
 # Create your views here.
 
 #staticのファイル更新日時を取得
@@ -45,7 +45,7 @@ def get_modified_date(filepath):
 class TopView(TemplateView):
     template_name = 'base.html' 
     def get_context_data(self, **kwargs):
-        load_dotenv()
+        
         context = super().get_context_data(**kwargs)
         context['style_css_date'] = get_modified_date('css/base2.css')
         context['shop1'] = Shop.objects.get(pk=1)
@@ -57,9 +57,19 @@ class ShopCreateView(CreateView):
     model = Shop
     #fields = '__all__'
     form_class = createForm
-    template_name = 'shops/shop_create.html'
+    template_name = 'shops/shop_create.html'    
     success_url_= reverse_lazy('shops:shop_create') 
     success_message = '新規店舗追加成功！'
+    def form_valid(self, form):
+        Shop = form.save(commit=False)
+        # 画像がフォームに含まれているかチェック
+        if form.cleaned_data['image']:
+            image_file = form.cleaned_data['image']
+            # 画像データをバイナリデータに変換して保存
+            bData = image_file.read()
+            Shop.image_binary = memoryview(bData) 
+        Shop.save()
+        return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['style_css_date'] = get_modified_date('css/create.css')
@@ -88,8 +98,15 @@ class ShopDetailView3(DetailView):
         context['review_list'] = Review.objects.all()
         context['style_js_date'] = get_modified_date('js/shop_detail.js')
         context['style_css_date'] = get_modified_date('css/shop_detail.css')
+        target_shop = Shop.objects.get(pk=self.kwargs['pk'])
+        if os.getenv('DJANGO_ENV') == 'development': #開発環境の場合
+            iFlag = 'image'
+        elif os.getenv('DJANGO_ENV') == 'production': #本番環境の場合
+            iFlag = 'binary'
+        iFlag = 'binary'
+        context['iFlag'] = iFlag
+        print(iFlag)
         return context
-    
     
     def post(self, request, *args, **kwargs):
         td = datetime.today()
@@ -172,6 +189,16 @@ class ShopUpdateView(UpdateView,DeletionMixin):
         )
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('accounts:kanrisha')
+    def form_valid(self, form):
+        Shop = form.save(commit=False)
+        # 画像がフォームに含まれているかチェック
+        if form.cleaned_data['image']:
+            image_file = form.cleaned_data['image']
+            # 画像データをバイナリデータに変換して保存
+            bData = image_file.read()
+            Shop.image_binary = memoryview(bData)
+        Shop.save()
+        return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['style_css_date'] = get_modified_date('css/shop_update.css')

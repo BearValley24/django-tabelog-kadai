@@ -39,6 +39,8 @@ class Shop(models.Model):
     modified = models.DateTimeField(auto_now=True, null=True, verbose_name='更新日時') #更新日
     regularHoliday = models.CharField(max_length=3, choices=day, blank=True, verbose_name='定休日（無入力で定休日無し）') # 定休日
     review = models.ManyToManyField('review.Review', blank=True, verbose_name='店舗レビュー')
+    image_binary = models.BinaryField(verbose_name='本番環境用設定', blank=True, null=True) #画像データをバイナリで保存
+
 
     # 昼と夜で分割営業している店の営業時間を設定出来ない
     def __str__(self):

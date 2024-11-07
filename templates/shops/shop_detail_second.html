@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}店舗詳細画面{% endblock %}
 {% load static %}
+{% load custom_filters %}
 {% block content %}
 <div class="shousai">
   <h2 class="tenmei">{{ shop_detail.shopName }}</h2>
@@ -20,7 +21,11 @@
 
   <div class="main-content">
     <div class="shop-image">
-      <img src="{{ shop_detail.image.url }}" alt="{{ shop_detail.image.url }}">     
+      {% if iFlag == image %}
+        <img src="{{ shop_detail.image.url }}" alt="{{ shop_detail.image.url }}">     
+      {% else %}
+        <img src="data:image/png;base64,{{ shop_detail.image_binary|b64encode }}" alt="店舗外観画像">
+      {% endif %}
     </div>
     <div class="main-content2">
       {% if user.is_authenticated %} 

@@ -19,6 +19,8 @@ import dj_database_url
 
 load_dotenv() # envファイル読み込み
 
+DJANGO_ENV = os.getenv('DJANGO_ENV', 'production')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -170,11 +172,9 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 #本番と開発環境の切り替え
-DJANGO_ENV = 'production'
 try:
-    DJANGO_ENV = 'development'
-    print('development')
-    from .settings_local import *
+    if os.getenv('DJANGO_ENV') == 'development':  # 開発環境の場合
+        from .settings_local import *  
 
 except ImportError:
     pass
