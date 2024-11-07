@@ -11,10 +11,14 @@ class SignUpForm(UserCreationForm):
         fields = (
             "account_id",
             "email",
+            "first_name",
+            "last_name"
         )
         labels = {
             'account_id':'アカウント名',
-            'email':'メールアドレス'
+            'email':'メールアドレス',
+            'first_name':'姓',
+            'last_name':'名'
         }
     def clean_account_id(self):
         account_id = self.cleaned_data['account_id']
