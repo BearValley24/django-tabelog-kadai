@@ -138,7 +138,10 @@ class ShopDetailView3(DetailView):
             schedule.account = yoyaku_User
             schedule.numbers = yoyaku_Memb
             schedule.save()
-            return redirect('accounts:mypage')               
+
+            #予約完了メッセージを送る
+            context = {'suc':'予約が完了しました。詳細はマイページからご確認ください。'}
+            return render(request, 'shops/result_success.html', context)             
 
 class ResultSuccessView(TemplateView):
     template_name = 'shops/result_success.html'

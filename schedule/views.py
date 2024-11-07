@@ -7,6 +7,8 @@ from django.contrib import messages
 from .models import Schedule
 from shops.models import Shop
 from django.urls import reverse_lazy
+from django.urls import reverse
+from urllib.parse import urlencode
 
 import datetime
 
@@ -14,4 +16,4 @@ import datetime
     
 class ScheduleDelete(DeleteView):
     model = Schedule
-    success_url = reverse_lazy('accounts:mypage')
+    success_url = reverse_lazy('shops:success')  # 削除後にリダイレクトするURL

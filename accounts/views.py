@@ -145,7 +145,10 @@ class Mypage(TemplateView):
         context['favorite_shop_json'] = json.dumps(list(favorite_shops.values('shopName')))
 
         # 予約（今日以降）とレビューのリストをコンテキストに追加
-        schedule_queryset = Schedule.objects.filter(account__account_id=request.user.get_username(), startDate__gte=d, startHour__gte=t) 
+        user = User.objects.get(pk=self.request.user.pk) 
+        schedule_queryset = Schedule.objects.filter(account=user)  # まず account のフィルタリング
+        schedule_queryset = schedule_queryset.filter(startDate__gte=d)  # 次に startDate のフィルタリング
+        schedule_queryset = schedule_queryset.filter(startHour__gte=t)  # 最後に startHour のフィルタリング
         schedule_list = list(schedule_queryset.values('shop_name', 'startDate', 'startHour', 'name', 'numbers', 'pk'))
         review_queryset = Review.objects.filter(reviewUserName=request.user)
         review_list = []
@@ -162,7 +165,6 @@ class Mypage(TemplateView):
                 'reviewComment': review.reviewComment,
                 'cancel_url_review': reverse('review:UpdateReview', args=[review.pk])   
             })
-
 
         context['schedule_list'] = schedule_list
         context['review_list_json'] = json.dumps(review_list, cls=DjangoJSONEncoder)

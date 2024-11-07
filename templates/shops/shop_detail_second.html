@@ -23,66 +23,69 @@
       <img src="{{ shop_detail.image.url }}" alt="{{ shop_detail.image.url }}">
     </div>
     <div class="main-content2">
-      <div class="input-yoyaku">
-          <!-- 営業開始時間以内で予約開始時間を入力してもらう -->
-
-          <p>予約日と予約開始時間と人数を入力してください。</p>
-          <form action="" method="POST">
-              {% csrf_token %}
-              <select id="yoyaku_form1" name="yoyaku_form1" required></select>
-              <select id="yoyaku_form2" name="yoyaku_form2" required></select>
-              <select id="yoyaku_form3" name="yoyaku_form3" required>
-                <option value="1" selected>1人</option>
-                <option value="2">2人</option>
-                <option value="3">3人</option>
-                <option value="4">4人</option>
-                <option value="5">5人</option>
-                <option value="6">6人</option>
-                <option value="7">7人</option>
-                <option value="8">8人</option>
-                <option value="9">9人</option>
-                <option value="10">10人</option>
-              </select>
-              <input type="hidden" name="yoyaku_form4" value="{{ user.get_username }}">
-              <input type="hidden" name="yoyaku_form5" value="{{ shop_detail.shopName }}">
-              <button type="submit" name="yoyaku">予約</button>
-          </form>
-      </div>
-
       {% if user.is_authenticated %} 
-      <div class="input-comment">
-        <p>コメントを入力してからレビュー投稿ボタンを押してください。</p>
-        <form action="" method="POST">
-          {% csrf_token %}
-          <select name="review-star" required>
-            <option value="1">★</option>
-            <option value="2">★★</option>
-            <option value="3" selected>★★★</option>
-            <option value="4">★★★★</option>
-            <option value="5">★★★★★</option>
-          </select>
-          <textarea type="text" rows="3" cols="30" name="review-comment" placeholder="コメントを入力してください。" required></textarea>
-          <input type="hidden" name="review-user" value="{{ user.get_username }}">
-          <input type="hidden" name="review-shop" value="{{ shop_detail.shopName }}">
-          <button type="submit" name="review-create">レビュー投稿</button>
-        </form>
-      </div>
-      {% if user.rank_is_free %}
-      <p>お気に入り登録は有料会員限定の機能です。</p>
+        {% if user.rank_is_free %}
+          <p>予約機能は有料会員限定の機能です。</p>
+          <br>
+          <p>レビュー投稿機能は有料会員限定の機能です</p>
+          <br>
+          <p>お気に入り登録は有料会員限定の機能です。</p>
+        {% else %}  
+          <div class="input-yoyaku">
+            <!-- 営業開始時間以内で予約開始時間を入力してもらう -->
+            <p>予約日と予約開始時間と人数を入力してください。</p>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <select id="yoyaku_form1" name="yoyaku_form1" required></select>
+                <select id="yoyaku_form2" name="yoyaku_form2" required></select>
+                <select id="yoyaku_form3" name="yoyaku_form3" required>
+                  <option value="1" selected>1人</option>
+                  <option value="2">2人</option>
+                  <option value="3">3人</option>
+                  <option value="4">4人</option>
+                  <option value="5">5人</option>
+                  <option value="6">6人</option>
+                  <option value="7">7人</option>
+                  <option value="8">8人</option>
+                  <option value="9">9人</option>
+                  <option value="10">10人</option>
+                </select>
+                <input type="hidden" name="yoyaku_form4" value="{{ user.get_username }}">
+                <input type="hidden" name="yoyaku_form5" value="{{ shop_detail.shopName }}">
+                <button type="submit" name="yoyaku">予約</button>
+            </form>
+          </div>
+
+          <div class="input-comment">
+            <p>コメントを入力してからレビュー投稿ボタンを押してください。</p>
+            <form action="" method="POST">
+              {% csrf_token %}
+              <select name="review-star" required>
+                <option value="1">★</option>
+                <option value="2">★★</option>
+                <option value="3" selected>★★★</option>
+                <option value="4">★★★★</option>
+                <option value="5">★★★★★</option>
+              </select>
+              <textarea type="text" rows="3" cols="30" name="review-comment" placeholder="コメントを入力してください。" required></textarea>
+              <input type="hidden" name="review-user" value="{{ user.get_username }}">
+              <input type="hidden" name="review-shop" value="{{ shop_detail.shopName }}">
+              <button type="submit" name="review-create">レビュー投稿</button>
+            </form>
+          </div>
+          <div class="okiniiri">
+            <form action="" method="post">
+              <input type="hidden" name="favorite_shop_name" value="{{ shop_detail.shopName }}">
+              <input type="hidden" name="favorite_shop_user" value="{{ user.get_username }}">
+              <button type="submit" name="button">このお店をお気に入りに追加</button>
+              {% csrf_token %}
+            </form>
+          </div>
+        {% endif %}
       {% else %}
-      <div class="okiniiri">
-        <form action="" method="post">
-          <input type="hidden" name="favorite_shop_name" value="{{ shop_detail.shopName }}">
-          <input type="hidden" name="favorite_shop_user" value="{{ user.get_username }}">
-          <button type="submit" name="button">このお店をお気に入りに追加</button>
-          {% csrf_token %}
-        </form>
-      </div>
-      {% endif %}
-      {% else %}
-      <div class="input-signup">
-        <a href="{% url 'accounts:signup_and_login' %}" class="btn btn-primary">コメントの投稿やお気に入り登録するには会員登録してください。</a>
-      </div>
+        <div class="input-signup">
+          <a href="{% url 'accounts:signup_and_login' %}" class="btn btn-primary">コメントの投稿やお気に入り登録するには会員登録してください。</a>
+        </div>
       {% endif %}
     </div>
   </div>
