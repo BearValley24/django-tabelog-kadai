@@ -5,7 +5,6 @@ from shops.models import Shop
 from .models import Review
 from .forms import ReviewCreateForm
 from django.views.generic.edit import FormView
-from django.utils import timezone
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -32,7 +31,9 @@ def get_modified_date(filepath):
 
     except:
         return ''
-        
+
+from django.utils import timezone
+
 class reviewUpdate(UpdateView):
     template_name = 'review/review_update.html'
     model = Review
@@ -42,12 +43,20 @@ class reviewUpdate(UpdateView):
             'reviewComment',
         )
     def post(self, request, *args, **kwargs):
+        #削除処理
+        if 'review-delete' in request.POST:
+            self.object = self.get_object()  
+            self.object.delete()
+            context = {'suc':'レビューを削除しました。'}
+            return render(request,'shops/result_success.html', context)
+        #アップデート処理
         self.object = self.get_object()
         self.object.reviewStar = request.POST.get('reviewStar')
         self.object.reviewComment = request.POST.get('reviewComment')
         self.object.reviewUpdated = timezone.now()
         self.object.save()
-        return redirect('accounts:mypage')
+        context = {'suc':'レビューの編集が完了しました。'}
+        return render(request,'shops/result_success.html', context)
 
 class reviewDelete(DeleteView):
     template_name = 'review/review_delete.html'
