@@ -172,9 +172,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 #本番と開発環境の切り替え
-try:
-    if os.getenv('DJANGO_ENV') == 'development':  # 開発環境の場合
-        from .settings_local import *  
+if os.getenv('DJANGO_ENV') == 'development':  # 開発環境の場合
+    from .settings_local import *  
 
-except ImportError:
-    pass
