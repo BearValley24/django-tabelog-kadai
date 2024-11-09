@@ -76,83 +76,100 @@ var worktimeDinner = document.getElementById('worktimeDinner');
 var wtd_start = worktimeDinner.getAttribute('wtd_start');
 var wtd_end = worktimeDinner.getAttribute('wtd_end');
 
+//営業開始時間がNullか未入力（None）の時は処理しない
 //営業終了時刻の1時間前まで30分ごと追加
 if (wtl_start != null) {
-  var wtl_end_min = new Date(nowYMD + 'T' + wtl_end);
-  wtl_end_min.setHours(wtl_end_min.getHours() - 1);
-  option = document.createElement('option');
-  option.value = wtl_start;
-  option.textContent = wtl_start;
-  optionYoyaku2.appendChild(option);
-
-  var plusTime = new Date(nowYMD + 'T' + wtl_start);
-  var j = 1;
-  do {
-    plusTime.setMinutes(plusTime.getMinutes() + 30);
-    //console.log(plusTime)
-    // 時間と分を取得し、2桁に整える
-    var hours = plusTime.getHours();
-    var minutes = plusTime.getMinutes();
-
-    // 分が1桁なら先頭に '0' を付ける
-    if (minutes < 10) {
-      minutes = '0' + minutes;
-    }
-    // 時が1桁なら先頭に '0' を付ける
-    if (hours < 10) {
-      hours = '0' + hours;
+  if (wtl_start != 'None') {
+    console.log('lunch')
+    //営業開始時間が0~9時の場合、先頭に0を付ける
+    if (wtl_start[1] == ':') {
+      wtl_start = '0' + wtl_start
     }
 
-    // 'hh:mm' 形式でオプションに追加
-    var formattedTime = hours + ':' + minutes;
-    
+    var wtl_end_min = new Date(nowYMD + 'T' + wtl_end);
+    wtl_end_min.setHours(wtl_end_min.getHours() - 1);
     option = document.createElement('option');
-    option.value = formattedTime;
-    option.textContent = formattedTime;
+    option.value = wtl_start;
+    option.textContent = wtl_start;
     optionYoyaku2.appendChild(option);
-    if (plusTime >= wtl_end_min){
-      break;
-    };
-    j = j + 1;
-  }while(j < 20);
+
+    var plusTime = new Date(nowYMD + 'T' + wtl_start);
+    var j = 1;
+    do {
+      plusTime.setMinutes(plusTime.getMinutes() + 30);
+      //console.log(plusTime)
+      // 時間と分を取得し、2桁に整える
+      var hours = plusTime.getHours();
+      var minutes = plusTime.getMinutes();
+
+      // 分が1桁なら先頭に '0' を付ける
+      if (minutes < 10) {
+        minutes = '0' + minutes;
+      }
+      // 時が1桁なら先頭に '0' を付ける
+      if (hours < 10) {
+        hours = '0' + hours;
+      }
+
+      // 'hh:mm' 形式でオプションに追加
+      var formattedTime = hours + ':' + minutes;
+
+      option = document.createElement('option');
+      option.value = formattedTime;
+      option.textContent = formattedTime;
+      optionYoyaku2.appendChild(option);
+      if (plusTime >= wtl_end_min){
+        break;
+      };
+      j = j + 1;
+    }while(j < 20);
+  };
 };
 if (wtd_start != null) {
-  var wtd_end_min = new Date(nowYMD + 'T' + wtd_end);
-  wtd_end_min.setHours(wtd_end_min.getHours() - 1);
-  option = document.createElement('option');
-  option.value = wtd_start;
-  option.textContent = wtd_start;
-  optionYoyaku2.appendChild(option);
-
-  var plusTime = new Date(nowYMD + 'T' + wtd_start);
-  var j = 1;
-  do {
-    plusTime.setMinutes(plusTime.getMinutes() + 30);
-    //console.log(plusTime)
-    // 時間と分を取得し、2桁に整える
-    var hours = plusTime.getHours();
-    var minutes = plusTime.getMinutes();
-
-    // 分が1桁なら先頭に '0' を付ける
-    if (minutes < 10) {
-      minutes = '0' + minutes;
-    }
-    // 時が1桁なら先頭に '0' を付ける
-    if (hours < 10) {
-      hours = '0' + hours;
+  if (wtd_start != 'None') {
+    console.log('dinner')
+    //営業開始時間が0~9時の場合、先頭に0を付ける
+    if (wtd_start[1] == ':') {
+      wtd_start = '0' + wtd_start
     }
 
-    // 'hh:mm' 形式でオプションに追加
-    var formattedTime = hours + ':' + minutes;
-    
+    var wtd_end_min = new Date(nowYMD + 'T' + wtd_end);
+    wtd_end_min.setHours(wtd_end_min.getHours() - 1);
     option = document.createElement('option');
-    option.value = formattedTime;
-    option.textContent = formattedTime;
+    option.value = wtd_start;
+    option.textContent = wtd_start;
     optionYoyaku2.appendChild(option);
-    if (plusTime >= wtd_end_min){
-      break;
-    };
-    j = j + 1;
-  }while(j < 20);
+
+    var plusTime = new Date(nowYMD + 'T' + wtd_start);
+    var j = 1;
+    do {
+      plusTime.setMinutes(plusTime.getMinutes() + 30);
+      //console.log(plusTime)
+      // 時間と分を取得し、2桁に整える
+      var hours = plusTime.getHours();
+      var minutes = plusTime.getMinutes();
+
+      // 分が1桁なら先頭に '0' を付ける
+      if (minutes < 10) {
+        minutes = '0' + minutes;
+      }
+      // 時が1桁なら先頭に '0' を付ける
+      if (hours < 10) {
+        hours = '0' + hours;
+      }
+
+      // 'hh:mm' 形式でオプションに追加
+      var formattedTime = hours + ':' + minutes;
+      
+      option = document.createElement('option');
+      option.value = formattedTime;
+      option.textContent = formattedTime;
+      optionYoyaku2.appendChild(option);
+      if (plusTime >= wtd_end_min){
+        break;
+      };
+      j = j + 1;
+    }while(j < 20);
+  };
 };
 

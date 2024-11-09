@@ -146,9 +146,9 @@ class Mypage(TemplateView):
 
         # 予約（今日以降）とレビューのリストをコンテキストに追加
         user = User.objects.get(pk=self.request.user.pk) 
-        schedule_queryset = Schedule.objects.filter(account=user)  # まず account のフィルタリング
-        schedule_queryset = schedule_queryset.filter(startDate__gte=d)  # 次に startDate のフィルタリング
-        schedule_queryset = schedule_queryset.filter(startHour__gte=t)  # 最後に startHour のフィルタリング
+        schedule_queryset = Schedule.objects.filter(account=user, startDate__gte=d)  
+        # 今日日付で現在時刻より前の予約はキャンセル不可なので表示しない
+        schedule_queryset=schedule_queryset.exclude(startDate=d,startHour__lte=t) 
         schedule_list = list(schedule_queryset.values('shop_name', 'startDate', 'startHour', 'name', 'numbers', 'pk'))
         review_queryset = Review.objects.filter(reviewUserName=request.user)
         review_list = []
