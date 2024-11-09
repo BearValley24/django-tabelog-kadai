@@ -77,7 +77,7 @@ var wtd_start = worktimeDinner.getAttribute('wtd_start');
 var wtd_end = worktimeDinner.getAttribute('wtd_end');
 
 //営業開始時間がNullか未入力（None）の時は処理しない
-//営業終了時刻の1時間前まで30分ごと追加
+//営業終了時刻の1時間前まで30分ごと追加//
 if (wtl_start != null) {
   if (wtl_start != 'None') {
     console.log('lunch')
